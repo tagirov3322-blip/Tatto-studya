@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Мастер тату
+model Artist {
+  id        String   @id @default(uuid())
+  name      String
+  bio       String?
+  photoUrl  String?
+  styles    String[] // например: ["реализм", "графика", "япония"]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  portfolioItems PortfolioItem[]
+  bookings       Booking[]
+}
+
+// Работа в портфолио
+model PortfolioItem {
+  id        String   @id @default(uuid())
+  imageUrl  String
+  title     String?
+  style     String?
+  artistId  String
+  createdAt DateTime @default(now())
+
+  artist Artist @relation(fields: [artistId], references: [id])
+}
+
+// Запись на сеанс
+model Booking {
+  id        String        @id @default(uuid())
+  name      String        // имя клиента
+  phone     String
+  email     String?
+  message   String?       // описание желаемой тату
+  date      DateTime
+  status    BookingStatus @default(PENDING)
+  artistId  String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  artist Artist @relation(fields: [artistId], references: [id])
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
