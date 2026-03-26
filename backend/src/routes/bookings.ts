@@ -22,7 +22,24 @@ bookingRouter.post("/", async (req, res) => {
 bookingRouter.get("/", async (_req, res) => {
   const bookings = await prisma.booking.findMany({
     include: { artist: true },
-    orderBy: { date: "asc" },
+    orderBy: { createdAt: "desc" },
   });
   res.json(bookings);
+});
+
+// Обновить статус заявки
+bookingRouter.put("/:id", async (req, res) => {
+  const { status } = req.body;
+  const booking = await prisma.booking.update({
+    where: { id: req.params.id },
+    data: { status },
+    include: { artist: true },
+  });
+  res.json(booking);
+});
+
+// Удалить заявку
+bookingRouter.delete("/:id", async (req, res) => {
+  await prisma.booking.delete({ where: { id: req.params.id } });
+  res.status(204).send();
 });
