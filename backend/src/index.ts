@@ -18,6 +18,7 @@ app.use(express.json());
 app.use("/api/artists", artistRouter);
 app.use("/api/bookings", bookingRouter);
 app.use("/api/portfolio", portfolioRouter);
+app.use("/api/services", serviceRouter);
 
 // Проверка работоспособности
 app.get("/api/health", (_req, res) => {
