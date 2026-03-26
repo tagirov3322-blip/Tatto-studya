@@ -1,7 +1,6 @@
 import { Router } from "express";
-import { PrismaClient } from "../generated/prisma/client";
+import { prisma } from "../prismaClient";
 
-const prisma = new PrismaClient();
 export const artistRouter = Router();
 
 // Получить всех мастеров
