@@ -23,3 +23,32 @@ artistRouter.get("/:id", async (req, res) => {
   }
   res.json(artist);
 });
+
+// Создать мастера
+artistRouter.post("/", async (req, res) => {
+  const { name, bio, photoUrl, styles } = req.body;
+  if (!name) {
+    res.status(400).json({ error: "name is required" });
+    return;
+  }
+  const artist = await prisma.artist.create({
+    data: { name, bio, photoUrl, styles: styles ?? [] },
+  });
+  res.status(201).json(artist);
+});
+
+// Обновить мастера
+artistRouter.put("/:id", async (req, res) => {
+  const { name, bio, photoUrl, styles } = req.body;
+  const artist = await prisma.artist.update({
+    where: { id: req.params.id },
+    data: { name, bio, photoUrl, styles },
+  });
+  res.json(artist);
+});
+
+// Удалить мастера
+artistRouter.delete("/:id", async (req, res) => {
+  await prisma.artist.delete({ where: { id: req.params.id } });
+  res.status(204).send();
+});
