@@ -696,7 +696,7 @@ function PortfolioForm({ initial, artists, onSave }: { initial?: any; artists: a
           ))}
         </select>
       </div>
-      <Button type="submit" className="w-full" disabled={uploading || !imageUrl}>{initial ? "Сохранить" : "Добавить"}</Button>
+      <Button type="submit" className="w-full" disabled={uploading || !imageUrl || submitting}>{submitting ? "Сохранение..." : initial ? "Сохранить" : "Добавить"}</Button>
     </form>
   );
 }
