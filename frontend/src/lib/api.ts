@@ -114,5 +114,8 @@ export const getArtistSchedule = (id: string) =>
 export const updateArtistSchedule = (id: string, schedule: Record<string, string[]>) =>
   request<any>(`/artists/${id}/schedule`, { method: "PUT", body: JSON.stringify({ schedule }) });
 
+// Stats
+export const getStats = () => request<any>("/stats");
+
 // Health
 export const checkHealth = () => request<{ status: string }>("/health");
