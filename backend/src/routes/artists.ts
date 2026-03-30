@@ -39,7 +39,7 @@ artistRouter.post("/", requireAdmin, async (req, res) => {
 });
 
 // Обновить мастера
-artistRouter.put("/:id", async (req, res) => {
+artistRouter.put("/:id", requireAdmin, async (req, res) => {
   const { name, bio, photoUrl, styles } = req.body;
   const artist = await prisma.artist.update({
     where: { id: req.params.id },
