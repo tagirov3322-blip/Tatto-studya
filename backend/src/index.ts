@@ -7,6 +7,7 @@ import { portfolioRouter } from "./routes/portfolio";
 import { serviceRouter } from "./routes/services";
 import { notificationRouter } from "./routes/notifications";
 import { authRouter } from "./routes/auth";
+import { uploadRouter } from "./routes/upload";
 
 dotenv.config();
 
