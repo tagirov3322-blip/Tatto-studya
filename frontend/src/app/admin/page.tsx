@@ -8,7 +8,7 @@ import {
   getServices, createService, updateService, deleteService,
   getPortfolio, createPortfolioItem, updatePortfolioItem, deletePortfolioItem,
   getArtistSchedule, updateArtistSchedule,
-  uploadFile,
+  uploadFile, getStats,
   isAuthenticated, removeToken,
 } from "@/lib/api";
 import { Button } from "@/components/ui/button";
