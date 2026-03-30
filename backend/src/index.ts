@@ -22,6 +22,7 @@ app.use("/api/bookings", bookingRouter);
 app.use("/api/portfolio", portfolioRouter);
 app.use("/api/services", serviceRouter);
 app.use("/api/notifications", notificationRouter);
+app.use("/api/auth", authRouter);
 
 // Проверка работоспособности
 app.get("/api/health", (_req, res) => {
