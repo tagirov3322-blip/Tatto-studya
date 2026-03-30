@@ -26,7 +26,7 @@ serviceRouter.post("/", requireAdmin, async (req, res) => {
 });
 
 // Обновить услугу
-serviceRouter.put("/:id", async (req, res) => {
+serviceRouter.put("/:id", requireAdmin, async (req, res) => {
   const { name, description, price, imageUrl } = req.body;
   const service = await prisma.service.update({
     where: { id: req.params.id },
