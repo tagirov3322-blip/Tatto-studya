@@ -10,6 +10,7 @@ import { serviceRouter } from "./routes/services";
 import { notificationRouter } from "./routes/notifications";
 import { authRouter } from "./routes/auth";
 import { uploadRouter } from "./routes/upload";
+import { statsRouter } from "./routes/stats";
 
 dotenv.config();
 
