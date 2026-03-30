@@ -160,7 +160,7 @@ function Card({
   return (
     <div
       ref={cardRef}
-      className="portfolio-card relative rounded-xl cursor-pointer transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] p-[2px]"
+      className="portfolio-card relative rounded-xl cursor-pointer transition-all duration-300 ease-out p-[2px]"
       style={{
         flex,
         background: isActive ? borderGradient : "rgba(34,197,94,0.1)",
