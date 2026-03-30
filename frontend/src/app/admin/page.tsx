@@ -104,6 +104,7 @@ export default function AdminPage() {
     { id: "services", label: "Услуги", icon: <BriefcaseIcon className="size-4" />, count: services.length },
     { id: "portfolio", label: "Портфолио", icon: <ImageIcon className="size-4" />, count: portfolio.length },
     { id: "schedule", label: "График", icon: <ClockIcon className="size-4" />, count: artists.length },
+    { id: "stats", label: "Статистика", icon: <ChartIcon className="size-4" />, count: 0 },
   ];
 
   return (
