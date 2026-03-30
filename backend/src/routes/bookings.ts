@@ -29,7 +29,7 @@ bookingRouter.get("/", requireAdmin, async (_req, res) => {
 });
 
 // Обновить статус заявки
-bookingRouter.put("/:id", async (req, res) => {
+bookingRouter.put("/:id", requireAdmin, async (req, res) => {
   const { status } = req.body;
   const booking = await prisma.booking.update({
     where: { id: req.params.id },
