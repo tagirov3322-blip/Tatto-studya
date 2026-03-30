@@ -657,15 +657,16 @@ function ServiceForm({ initial, onSave }: { initial?: any; onSave: (data: any) =
   const [description, setDescription] = useState(initial?.description || "");
   const [price, setPrice] = useState(initial?.price?.toString() || "");
   const [imageUrl, setImageUrl] = useState(initial?.imageUrl || "");
+  const [submitting, setSubmitting] = useState(false);
 
   return (
-    <form onSubmit={(e) => { e.preventDefault(); onSave({ name, description, price: Number(price), imageUrl }); }} className="space-y-4">
+    <form onSubmit={async (e) => { e.preventDefault(); if (submitting) return; setSubmitting(true); await onSave({ name, description, price: Number(price), imageUrl }); }} className="space-y-4">
       <h2 className="text-lg font-bold">{initial ? "Редактировать услугу" : "Новая услуга"}</h2>
       <Input label="Название *" value={name} onChange={setName} required />
       <Input label="Описание" value={description} onChange={setDescription} />
       <Input label="Цена (₽) *" value={price} onChange={setPrice} type="number" required />
       <Input label="URL изображения" value={imageUrl} onChange={setImageUrl} placeholder="https://..." />
-      <Button type="submit" className="w-full">{initial ? "Сохранить" : "Создать"}</Button>
+      <Button type="submit" className="w-full" disabled={submitting}>{submitting ? "Сохранение..." : initial ? "Сохранить" : "Создать"}</Button>
     </form>
   );
 }
