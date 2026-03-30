@@ -27,6 +27,7 @@ export default function Home() {
       <TrainingSection />
       <BookingForm />
       <ContactsFaqSection />
+      <CookieConsent />
     </main>
   );
 }
