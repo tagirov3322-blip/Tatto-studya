@@ -20,7 +20,7 @@ bookingRouter.post("/", async (req, res) => {
 });
 
 // Получить все записи (для админки)
-bookingRouter.get("/", async (_req, res) => {
+bookingRouter.get("/", requireAdmin, async (_req, res) => {
   const bookings = await prisma.booking.findMany({
     include: { artist: true },
     orderBy: { createdAt: "desc" },
