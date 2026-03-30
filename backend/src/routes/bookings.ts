@@ -13,6 +13,19 @@ bookingRouter.post("/", async (req, res) => {
     return;
   }
 
+  // Проверка: с этого номера уже есть активная заявка
+  const existing = await prisma.booking.findFirst({
+    where: {
+      phone,
+      status: { in: ["PENDING", "CONFIRMED"] },
+    },
+  });
+
+  if (existing) {
+    res.status(409).json({ error: "С этого номера уже есть активная заявка" });
+    return;
+  }
+
   const booking = await prisma.booking.create({
     data: { name, phone, email, message, date: new Date(date), artistId },
   });
