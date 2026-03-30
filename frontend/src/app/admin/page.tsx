@@ -675,9 +675,10 @@ function PortfolioForm({ initial, artists, onSave }: { initial?: any; artists: a
   const [style, setStyle] = useState(initial?.style || "");
   const [artistId, setArtistId] = useState(initial?.artistId || artists[0]?.id || "");
   const [uploading, setUploading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   return (
-    <form onSubmit={(e) => { e.preventDefault(); onSave({ imageUrl, title, style, artistId }); }} className="space-y-4">
+    <form onSubmit={async (e) => { e.preventDefault(); if (submitting) return; setSubmitting(true); await onSave({ imageUrl, title, style, artistId }); }} className="space-y-4">
       <h2 className="text-lg font-bold">{initial ? "Редактировать работу" : "Новая работа"}</h2>
       <ImageUpload value={imageUrl} onChange={setImageUrl} uploading={uploading} setUploading={setUploading} />
       <Input label="Название" value={title} onChange={setTitle} placeholder="Например: Реализм на предплечье" />
