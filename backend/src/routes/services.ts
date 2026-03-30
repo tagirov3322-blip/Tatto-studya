@@ -36,7 +36,7 @@ serviceRouter.put("/:id", requireAdmin, async (req, res) => {
 });
 
 // Удалить услугу
-serviceRouter.delete("/:id", async (req, res) => {
+serviceRouter.delete("/:id", requireAdmin, async (req, res) => {
   await prisma.service.delete({ where: { id: req.params.id } });
   res.status(204).send();
 });
