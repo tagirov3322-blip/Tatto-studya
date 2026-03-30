@@ -122,6 +122,7 @@ export function PortfolioSection() {
               ))}
             </div>
           </div>
+        )}
       </div>
     </section>
   );
