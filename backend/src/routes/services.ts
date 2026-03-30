@@ -13,7 +13,7 @@ serviceRouter.get("/", async (_req, res) => {
 });
 
 // Создать услугу
-serviceRouter.post("/", async (req, res) => {
+serviceRouter.post("/", requireAdmin, async (req, res) => {
   const { name, description, price, imageUrl } = req.body;
   if (!name || price === undefined) {
     res.status(400).json({ error: "name and price are required" });
