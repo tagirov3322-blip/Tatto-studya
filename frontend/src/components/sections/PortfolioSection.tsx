@@ -1,15 +1,31 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { BGPattern } from "@/components/ui/bg-pattern";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
 import { TextReveal } from "@/components/animations/TextReveal";
 import { getPortfolio } from "@/lib/api";
 
+function useInView(ref: React.RefObject<HTMLElement | null>, threshold = 0.2) {
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    if (!ref.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry && entry.isIntersecting) { setInView(true); observer.disconnect(); } },
+      { threshold }
+    );
+    observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [ref, threshold]);
+  return inView;
+}
+
 export function PortfolioSection() {
   const [hovered, setHovered] = useState<number | null>(null);
   const [portfolioItems, setPortfolioItems] = useState<{ img: string }[]>([]);
   const [loading, setLoading] = useState(true);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(sectionRef);
 
   useEffect(() => {
     getPortfolio()
@@ -41,7 +57,7 @@ export function PortfolioSection() {
   return (
     <section id="portfolio" className="relative bg-black py-24 px-4 overflow-hidden">
       <BGPattern variant="dots" mask="fade-center" fill="rgba(255,255,255,0.12)" size={16} />
-      <div className="max-w-6xl mx-auto relative z-10">
+      <div ref={sectionRef} className="max-w-6xl mx-auto relative z-10">
         <div className="text-center mb-14">
           <TextReveal>
             <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">Портфолио</h2>
@@ -75,6 +91,8 @@ export function PortfolioSection() {
                   isActive={hovered === i}
                   isDimmed={hovered !== null && hovered !== i}
                   onHover={() => setHovered(i)}
+                  show={inView}
+                  delay={i * 150}
                 />
               ))}
             </div>
@@ -93,6 +111,8 @@ export function PortfolioSection() {
                     isActive={hovered === i + 3}
                     isDimmed={hovered !== null && hovered !== i + 3}
                     onHover={() => setHovered(i + 3)}
+                    show={inView}
+                    delay={(i + 3) * 150}
                   />
                 ))}
               </div>
@@ -110,12 +130,16 @@ function Card({
   isActive,
   isDimmed,
   onHover,
+  show,
+  delay,
 }: {
   img: string;
   flex: number;
   isActive: boolean;
   isDimmed: boolean;
   onHover: () => void;
+  show: boolean;
+  delay: number;
 }) {
   const cardRef = React.useRef<HTMLDivElement>(null);
   const [mouse, setMouse] = React.useState({ x: 0.5, y: 0.5 });
@@ -136,10 +160,13 @@ function Card({
   return (
     <div
       ref={cardRef}
-      className="portfolio-card relative rounded-xl cursor-pointer transition-[flex] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] p-[2px]"
+      className="portfolio-card relative rounded-xl cursor-pointer transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] p-[2px]"
       style={{
         flex,
         background: isActive ? borderGradient : "rgba(34,197,94,0.1)",
+        opacity: show ? 1 : 0,
+        transform: show ? "translateY(0)" : "translateY(60px)",
+        transitionDelay: `${delay}ms`,
       }}
       onMouseEnter={onHover}
       onMouseMove={handleMouseMove}
