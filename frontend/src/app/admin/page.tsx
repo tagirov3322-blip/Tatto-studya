@@ -635,9 +635,10 @@ function ArtistForm({ initial, onSave }: { initial?: any; onSave: (data: any) =>
   const [photoUrl, setPhotoUrl] = useState(initial?.photoUrl || "");
   const [styles, setStyles] = useState(initial?.styles?.join(", ") || "");
   const [uploading, setUploading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   return (
-    <form onSubmit={(e) => { e.preventDefault(); onSave({ name, bio, photoUrl, styles: styles.split(",").map((s: string) => s.trim()).filter(Boolean) }); }} className="space-y-4">
+    <form onSubmit={async (e) => { e.preventDefault(); if (submitting) return; setSubmitting(true); await onSave({ name, bio, photoUrl, styles: styles.split(",").map((s: string) => s.trim()).filter(Boolean) }); }} className="space-y-4">
       <h2 className="text-lg font-bold">{initial ? "Редактировать мастера" : "Новый мастер"}</h2>
       <Input label="Имя *" value={name} onChange={setName} required />
       <Input label="Описание" value={bio} onChange={setBio} />
@@ -646,7 +647,7 @@ function ArtistForm({ initial, onSave }: { initial?: any; onSave: (data: any) =>
         <ImageUpload value={photoUrl} onChange={setPhotoUrl} uploading={uploading} setUploading={setUploading} />
       </div>
       <Input label="Стили (через запятую)" value={styles} onChange={setStyles} placeholder="Реализм, Графика, Ориентал" />
-      <Button type="submit" className="w-full" disabled={uploading}>{initial ? "Сохранить" : "Создать"}</Button>
+      <Button type="submit" className="w-full" disabled={uploading || submitting}>{submitting ? "Сохранение..." : initial ? "Сохранить" : "Создать"}</Button>
     </form>
   );
 }
