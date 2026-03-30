@@ -19,7 +19,15 @@ const PORT = process.env.PORT || 4000;
 
 // Безопасность
 app.use(helmet()); // HTTP заголовки безопасности
-app.use(cors({ origin: process.env.FRONTEND_URL || "http://localhost:3000" }));
+app.use(cors({
+  origin: [
+    "http://localhost:3000",
+    "https://frontend-liart-gamma-92.vercel.app",
+    "https://klaksa-tattoo.ru",
+    "https://www.klaksa-tattoo.ru",
+    process.env.FRONTEND_URL || "",
+  ].filter(Boolean),
+}));
 app.use(express.json({ limit: "1mb" })); // ограничение размера запроса
 
 // Защита от брутфорса логина — 5 попыток за 15 минут
