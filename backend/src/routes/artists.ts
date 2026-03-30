@@ -49,7 +49,7 @@ artistRouter.put("/:id", requireAdmin, async (req, res) => {
 });
 
 // Удалить мастера
-artistRouter.delete("/:id", async (req, res) => {
+artistRouter.delete("/:id", requireAdmin, async (req, res) => {
   await prisma.artist.delete({ where: { id: req.params.id } });
   res.status(204).send();
 });
