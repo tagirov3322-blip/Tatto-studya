@@ -166,7 +166,6 @@ function Card({
       style={{
         flex,
         background: isActive ? borderGradient : "rgba(34,197,94,0.1)",
-        visibility: "hidden",
       }}
       onMouseEnter={onHover}
       onMouseMove={handleMouseMove}
