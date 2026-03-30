@@ -331,17 +331,17 @@ function DateTimePicker({ value, onChange, bookedSlots = [], schedule }: { value
   };
 
   const isNonWorking = (day: number) => {
-    if (!schedule || Object.keys(schedule).length === 0) return false; // no schedule = all days available
+    if (!schedule || Object.keys(schedule).length === 0) return true; // no schedule = no days available
     const key = toDateKey(viewYear, viewMonth, day);
     const slots = schedule[key];
     return !slots || slots.length === 0;
   };
 
   const getAvailableTimes = () => {
-    if (!schedule || Object.keys(schedule).length === 0 || !pickedDay) return TIMES;
+    if (!schedule || Object.keys(schedule).length === 0 || !pickedDay) return [];
     const key = toDateKey(pickedYear, pickedMonth, pickedDay);
     const slots = schedule[key];
-    if (!slots || slots.length === 0) return TIMES;
+    if (!slots || slots.length === 0) return [];
     return TIMES.filter((t) => slots.includes(t));
   };
 
