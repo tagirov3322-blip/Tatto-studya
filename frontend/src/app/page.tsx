@@ -11,6 +11,7 @@ import { TrainingSection } from "@/components/sections/TrainingSection";
 import { BookingForm } from "@/components/sections/BookingForm";
 import { ContactsFaqSection } from "@/components/sections/ContactsFaqSection";
 import { CustomCursor } from "@/components/ui/custom-cursor";
+import { CookieConsent } from "@/components/ui/cookie-consent";
 
 export default function Home() {
   return (
