@@ -40,7 +40,7 @@ bookingRouter.put("/:id", requireAdmin, async (req, res) => {
 });
 
 // Удалить заявку
-bookingRouter.delete("/:id", async (req, res) => {
+bookingRouter.delete("/:id", requireAdmin, async (req, res) => {
   await prisma.booking.delete({ where: { id: req.params.id } });
   res.status(204).send();
 });
