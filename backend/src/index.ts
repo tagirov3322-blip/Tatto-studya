@@ -24,6 +24,7 @@ app.use("/api/portfolio", portfolioRouter);
 app.use("/api/services", serviceRouter);
 app.use("/api/notifications", notificationRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/upload", uploadRouter);
 
 // Проверка работоспособности
 app.get("/api/health", (_req, res) => {
