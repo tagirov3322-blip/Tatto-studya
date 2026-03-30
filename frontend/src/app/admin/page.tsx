@@ -194,6 +194,7 @@ export default function AdminPage() {
         {tab === "services" && <ServicesTab services={services} onEdit={(s) => { setEditingService(s); setShowServiceForm(true); }} onDelete={async (id) => { await deleteService(id); load(); }} />}
         {tab === "portfolio" && <PortfolioTab items={portfolio} artists={artists} onEdit={(p) => { setEditingPortfolio(p); setShowPortfolioForm(true); }} onDelete={async (id) => { await deletePortfolioItem(id); load(); }} />}
         {tab === "schedule" && <ScheduleTab artists={artists} />}
+        {tab === "stats" && <StatsTab />}
 
         {/* Artist form modal */}
         {showArtistForm && (
