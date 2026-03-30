@@ -78,6 +78,11 @@ export function PortfolioSection() {
           </ScrollReveal>
         </div>
 
+        {loading ? (
+          <div className="text-center text-gray-500 py-20">Загрузка...</div>
+        ) : portfolioItems.length === 0 ? (
+          <div className="text-center text-gray-500 py-20">Нет работ в портфолио</div>
+        ) : (
           <div
             ref={gridRef}
             className="flex flex-col gap-3"
