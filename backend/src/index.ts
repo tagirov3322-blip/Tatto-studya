@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
 import { artistRouter } from "./routes/artists";
 import { bookingRouter } from "./routes/bookings";
