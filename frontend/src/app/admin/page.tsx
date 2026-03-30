@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 
 /* ── Types ── */
-type Tab = "artists" | "bookings" | "services" | "portfolio" | "schedule";
+type Tab = "artists" | "bookings" | "services" | "portfolio" | "schedule" | "stats";
 
 const statusColors: Record<string, string> = {
   PENDING: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
