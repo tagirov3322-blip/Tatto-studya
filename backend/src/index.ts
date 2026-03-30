@@ -20,6 +20,7 @@ app.use("/api/artists", artistRouter);
 app.use("/api/bookings", bookingRouter);
 app.use("/api/portfolio", portfolioRouter);
 app.use("/api/services", serviceRouter);
+app.use("/api/notifications", notificationRouter);
 
 // Проверка работоспособности
 app.get("/api/health", (_req, res) => {
