@@ -36,6 +36,7 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
   },
+  "exclude": ["prisma.config.ts"],
   "ts-node": {
     "transpileOnly": true,
     "files": true
