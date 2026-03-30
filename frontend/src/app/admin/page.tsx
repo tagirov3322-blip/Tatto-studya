@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  UsersIcon, CalendarIcon, BriefcaseIcon, ImageIcon, ClockIcon,
+  UsersIcon, CalendarIcon, BriefcaseIcon, ImageIcon, ClockIcon, ChartBarIcon as ChartIcon,
   PlusIcon, Trash2Icon, PencilIcon, XIcon, CheckIcon,
   LayoutDashboardIcon, LogOutIcon, RefreshCwIcon, UploadIcon,
 } from "lucide-react";
