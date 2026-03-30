@@ -26,7 +26,7 @@ artistRouter.get("/:id", async (req, res) => {
 });
 
 // Создать мастера
-artistRouter.post("/", async (req, res) => {
+artistRouter.post("/", requireAdmin, async (req, res) => {
   const { name, bio, photoUrl, styles } = req.body;
   if (!name) {
     res.status(400).json({ error: "name is required" });
