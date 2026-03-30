@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
-import { getArtists, createBooking, getBookedSlots } from "@/lib/api";
+import { getArtists, createBooking, getBookedSlots, getArtistSchedule } from "@/lib/api";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { GlowBorder } from "@/components/ui/glow-border";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
@@ -23,17 +23,20 @@ export function BookingForm() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
+  const [artistSchedule, setArtistSchedule] = useState<Record<string, string[]> | null>(null);
 
   useEffect(() => {
     getArtists().then(setArtists).catch(() => {});
   }, []);
 
-  // Load booked slots when artist changes
+  // Load booked slots and schedule when artist changes
   useEffect(() => {
     if (form.artistId) {
       getBookedSlots(form.artistId).then(setBookedSlots).catch(() => setBookedSlots([]));
+      getArtistSchedule(form.artistId).then(setArtistSchedule).catch(() => setArtistSchedule(null));
     } else {
       setBookedSlots([]);
+      setArtistSchedule(null);
     }
   }, [form.artistId]);
 
@@ -183,6 +186,7 @@ export function BookingForm() {
                   value={form.date}
                   onChange={(d) => setForm({ ...form, date: d })}
                   bookedSlots={bookedSlots}
+                  schedule={artistSchedule}
                 />
               </div>
 
@@ -291,7 +295,11 @@ const MONTHS_RU = ["Январь", "Февраль", "Март", "Апрель",
 const DAYS_RU = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
 const TIMES = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
 
-function DateTimePicker({ value, onChange, bookedSlots = [] }: { value: string; onChange: (d: string) => void; bookedSlots?: string[] }) {
+function toDateKey(y: number, m: number, d: number) {
+  return `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+}
+
+function DateTimePicker({ value, onChange, bookedSlots = [], schedule }: { value: string; onChange: (d: string) => void; bookedSlots?: string[]; schedule?: Record<string, string[]> | null }) {
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<"date" | "time">("date");
   const today = new Date();
@@ -320,6 +328,21 @@ function DateTimePicker({ value, onChange, bookedSlots = [] }: { value: string; 
     const t = new Date();
     t.setHours(0, 0, 0, 0);
     return d < t;
+  };
+
+  const isNonWorking = (day: number) => {
+    if (!schedule || Object.keys(schedule).length === 0) return false; // no schedule = all days available
+    const key = toDateKey(viewYear, viewMonth, day);
+    const slots = schedule[key];
+    return !slots || slots.length === 0;
+  };
+
+  const getAvailableTimes = () => {
+    if (!schedule || Object.keys(schedule).length === 0 || !pickedDay) return TIMES;
+    const key = toDateKey(pickedYear, pickedMonth, pickedDay);
+    const slots = schedule[key];
+    if (!slots || slots.length === 0) return TIMES;
+    return TIMES.filter((t) => slots.includes(t));
   };
 
   const updatePos = () => {
@@ -445,16 +468,18 @@ function DateTimePicker({ value, onChange, bookedSlots = [] }: { value: string; 
             </div>
 
             <div className="grid grid-cols-7">
-              {days.map((day, i) => (
+              {days.map((day, i) => {
+                const disabled = day === null || isPast(day) || (day !== null && isNonWorking(day));
+                return (
                 <div key={i} className="flex items-center justify-center p-0.5">
                   <button
                     type="button"
-                    disabled={day === null || isPast(day)}
+                    disabled={disabled}
                     onClick={() => day && selectDay(day)}
                     className={`size-9 rounded-lg text-xs font-medium transition-all duration-200 ${
                       day === null
                         ? "invisible"
-                        : isPast(day)
+                        : disabled
                           ? "text-neutral-700 cursor-not-allowed"
                           : pickedDay === day && pickedMonth === viewMonth && pickedYear === viewYear
                             ? "bg-green-600 text-white shadow-[0_0_10px_rgba(34,197,94,0.3)]"
@@ -464,7 +489,8 @@ function DateTimePicker({ value, onChange, bookedSlots = [] }: { value: string; 
                     {day}
                   </button>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </>
         )}
@@ -476,7 +502,7 @@ function DateTimePicker({ value, onChange, bookedSlots = [] }: { value: string; 
             </p>
             {pickedDay ? (
               <div className="grid grid-cols-3 gap-2">
-                {TIMES.map((t) => {
+                {getAvailableTimes().map((t) => {
                   const [h, m] = t.split(":");
                   const isBooked = bookedSlots.some((s) => {
                     const booked = new Date(s);

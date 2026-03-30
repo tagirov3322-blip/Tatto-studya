@@ -90,5 +90,29 @@ export const updatePortfolioItem = (id: string, data: any) =>
 export const deletePortfolioItem = (id: string) =>
   request<void>(`/portfolio/${id}`, { method: "DELETE" });
 
+// Upload
+export async function uploadFile(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const token = getToken();
+  const headers: Record<string, string> = {};
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const res = await fetch(`${BASE}/upload`, { method: "POST", headers, body: formData });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: "Ошибка загрузки" }));
+    throw new Error(err.error || "Ошибка загрузки");
+  }
+  const data = await res.json();
+  return data.url;
+}
+
+// Schedule — stored as JSON field on Artist
+export const getArtistSchedule = (id: string) =>
+  request<Record<string, string[]>>(`/artists/${id}/schedule`);
+export const updateArtistSchedule = (id: string, schedule: Record<string, string[]>) =>
+  request<any>(`/artists/${id}/schedule`, { method: "PUT", body: JSON.stringify({ schedule }) });
+
 // Health
 export const checkHealth = () => request<{ status: string }>("/health");

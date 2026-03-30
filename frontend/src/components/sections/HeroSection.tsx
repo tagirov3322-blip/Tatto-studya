@@ -69,8 +69,17 @@ export function HeroSection() {
         <div data-hero-bar className="w-20 h-1 bg-green-500 rounded-full origin-left" style={{ opacity: 0 }} />
 
         <div data-hero-line style={{ opacity: 0 }}>
-          <h1 className="text-6xl md:text-8xl lg:text-9xl text-white font-bold tracking-tighter uppercase">
-            Кля<span className="text-green-400">к</span>са
+          <h1 className="text-6xl md:text-8xl lg:text-9xl text-white font-bold tracking-tighter uppercase flex">
+            {"Клякса".split("").map((char, i) => (
+              <motion.span
+                key={i}
+                className={`inline-block cursor-default select-none ${i === 0 ? "-ml-3 md:-ml-5" : ""} ${char === "к" && i === 3 ? "text-green-400" : ""}`}
+                whileHover={{ scale: 1.3, y: -8 }}
+                transition={{ type: "spring", stiffness: 200, damping: 25 }}
+              >
+                {char}
+              </motion.span>
+            ))}
           </h1>
         </div>
 

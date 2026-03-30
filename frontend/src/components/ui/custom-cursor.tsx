@@ -19,6 +19,7 @@ export function CustomCursor() {
   const prevMouse = useRef({ x: -100, y: -100 });
   const particles = useRef<Particle[]>([]);
   const [onGreen, setOnGreen] = useState(false);
+  const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -43,6 +44,9 @@ export function CustomCursor() {
     };
 
     const handleMove = (e: MouseEvent) => {
+      // Hide cursor when near the right scrollbar
+      const nearScrollbar = e.clientX >= window.innerWidth - 16;
+      setHidden(nearScrollbar);
       prevMouse.current = { ...mouse.current };
       mouse.current = { x: e.clientX, y: e.clientY };
 
@@ -122,6 +126,7 @@ export function CustomCursor() {
       <style>{`
         @media (pointer: fine) {
           * { cursor: none !important; }
+          ::-webkit-scrollbar { cursor: default !important; }
         }
         @media (pointer: coarse) {
           .custom-cursor-dot, .custom-cursor-canvas { display: none; }
@@ -131,11 +136,12 @@ export function CustomCursor() {
       <canvas
         ref={canvasRef}
         className="custom-cursor-canvas pointer-events-none fixed inset-0 z-[999999]"
+        style={{ opacity: hidden ? 0 : 1, transition: "opacity 200ms" }}
       />
 
       <div
         ref={dotRef}
-        className="custom-cursor-dot pointer-events-none fixed top-0 left-0 z-[999999] transition-[background-color,width,height] duration-200"
+        className="custom-cursor-dot pointer-events-none fixed top-0 left-0 z-[999999]"
         style={{
           width: onGreen ? 12 : 9,
           height: onGreen ? 12 : 9,
@@ -145,6 +151,8 @@ export function CustomCursor() {
           backgroundColor: "rgba(255,255,255,0.95)",
           border: "3px solid rgba(0,0,0,0.9)",
           boxShadow: "0 0 0 1.5px rgba(255,255,255,0.9), 0 0 6px rgba(0,0,0,0.4)",
+          opacity: hidden ? 0 : 1,
+          transition: "background-color 200ms, width 200ms, height 200ms, opacity 200ms",
         }}
       />
     </>

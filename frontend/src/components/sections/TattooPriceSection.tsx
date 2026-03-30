@@ -19,7 +19,7 @@ function PricingCard({ titleBadge, priceLabel, priceSuffix = '', features, cta =
       <div className="p-5 h-full">
         <div className="flex items-center gap-3">
           <Badge variant="secondary" className="bg-green-500/10 text-green-400 border-green-500/20">{titleBadge}</Badge>
-          <div className="ml-auto"><a href="#booking"><Button variant="outline" className="border-green-500/30 text-green-400 hover:bg-green-500/10">{cta}</Button></a></div>
+          <div className="ml-auto"><a href="#booking"><Button variant="outline" className="border-green-500/30 text-green-400 hover:bg-green-600 hover:text-white hover:border-green-600 hover:shadow-[0_0_20px_rgba(34,197,94,0.3)] transition-all duration-300">{cta}</Button></a></div>
         </div>
         <div className="flex items-end gap-2 mt-4">
           <span className="font-mono text-4xl font-bold tracking-tight text-white">{priceLabel}</span>
@@ -56,7 +56,7 @@ export function TattooPriceSection() {
                   <div className="flex items-center gap-3 relative">
                     <Badge variant="secondary" className="bg-green-500/10 text-green-400 border-green-500/20">ИНДИВИДУАЛЬНЫЙ ПРОЕКТ</Badge>
                     <Badge variant="outline" className="hidden lg:flex text-green-400 border-green-500/30"><SparklesIcon className="me-1 size-3" /> Чаще всего выбирают</Badge>
-                    <div className="ml-auto"><a href="#booking"><Button className="bg-green-600 text-white hover:bg-green-700">Записаться</Button></a></div>
+                    <div className="ml-auto"><a href="#booking"><Button variant="outline" className="border-green-500/30 text-green-400 hover:bg-green-600 hover:text-white hover:border-green-600 hover:shadow-[0_0_20px_rgba(34,197,94,0.3)] transition-all duration-300">Записаться</Button></a></div>
                   </div>
                   <div className="flex flex-col mt-4 lg:flex-row relative">
                     <div className="pb-4 lg:w-[30%]">

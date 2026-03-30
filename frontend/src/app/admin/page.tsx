@@ -1,24 +1,26 @@
 "use client";
 
-import { useState, useEffect, type ReactNode } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import {
   getArtists, createArtist, updateArtist, deleteArtist,
   getBookings, updateBooking, deleteBooking,
   getServices, createService, updateService, deleteService,
   getPortfolio, createPortfolioItem, updatePortfolioItem, deletePortfolioItem,
+  getArtistSchedule, updateArtistSchedule,
+  uploadFile,
   isAuthenticated, removeToken,
 } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  UsersIcon, CalendarIcon, BriefcaseIcon, ImageIcon,
+  UsersIcon, CalendarIcon, BriefcaseIcon, ImageIcon, ClockIcon,
   PlusIcon, Trash2Icon, PencilIcon, XIcon, CheckIcon,
-  LayoutDashboardIcon, LogOutIcon, RefreshCwIcon,
+  LayoutDashboardIcon, LogOutIcon, RefreshCwIcon, UploadIcon,
 } from "lucide-react";
 
 /* ── Types ── */
-type Tab = "artists" | "bookings" | "services" | "portfolio";
+type Tab = "artists" | "bookings" | "services" | "portfolio" | "schedule";
 
 const statusColors: Record<string, string> = {
   PENDING: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
@@ -66,6 +68,8 @@ export default function AdminPage() {
   const [editingArtist, setEditingArtist] = useState<any>(null);
   const [showServiceForm, setShowServiceForm] = useState(false);
   const [editingService, setEditingService] = useState<any>(null);
+  const [showPortfolioForm, setShowPortfolioForm] = useState(false);
+  const [editingPortfolio, setEditingPortfolio] = useState<any>(null);
 
   const load = async () => {
     if (!isAuthenticated()) {
@@ -99,6 +103,7 @@ export default function AdminPage() {
     { id: "artists", label: "Мастера", icon: <UsersIcon className="size-4" />, count: artists.length },
     { id: "services", label: "Услуги", icon: <BriefcaseIcon className="size-4" />, count: services.length },
     { id: "portfolio", label: "Портфолио", icon: <ImageIcon className="size-4" />, count: portfolio.length },
+    { id: "schedule", label: "График", icon: <ClockIcon className="size-4" />, count: artists.length },
   ];
 
   return (
@@ -170,6 +175,11 @@ export default function AdminPage() {
                 <PlusIcon className="size-4 mr-1" /> Добавить услугу
               </Button>
             )}
+            {tab === "portfolio" && (
+              <Button size="sm" onClick={() => { setEditingPortfolio(null); setShowPortfolioForm(true); }}>
+                <PlusIcon className="size-4 mr-1" /> Добавить работу
+              </Button>
+            )}
           </div>
         </div>
 
@@ -181,7 +191,8 @@ export default function AdminPage() {
         {tab === "bookings" && <BookingsTab bookings={bookings} onUpdate={load} />}
         {tab === "artists" && <ArtistsTab artists={artists} onEdit={(a) => { setEditingArtist(a); setShowArtistForm(true); }} onDelete={async (id) => { await deleteArtist(id); load(); }} />}
         {tab === "services" && <ServicesTab services={services} onEdit={(s) => { setEditingService(s); setShowServiceForm(true); }} onDelete={async (id) => { await deleteService(id); load(); }} />}
-        {tab === "portfolio" && <PortfolioTab items={portfolio} />}
+        {tab === "portfolio" && <PortfolioTab items={portfolio} artists={artists} onEdit={(p) => { setEditingPortfolio(p); setShowPortfolioForm(true); }} onDelete={async (id) => { await deletePortfolioItem(id); load(); }} />}
+        {tab === "schedule" && <ScheduleTab artists={artists} />}
 
         {/* Artist form modal */}
         {showArtistForm && (
@@ -192,6 +203,22 @@ export default function AdminPage() {
                 if (editingArtist) await updateArtist(editingArtist.id, data);
                 else await createArtist(data);
                 setShowArtistForm(false);
+                load();
+              }}
+            />
+          </Modal>
+        )}
+
+        {/* Portfolio form modal */}
+        {showPortfolioForm && (
+          <Modal onClose={() => setShowPortfolioForm(false)}>
+            <PortfolioForm
+              initial={editingPortfolio}
+              artists={artists}
+              onSave={async (data) => {
+                if (editingPortfolio) await updatePortfolioItem(editingPortfolio.id, data);
+                else await createPortfolioItem(data);
+                setShowPortfolioForm(false);
                 load();
               }}
             />
@@ -328,22 +355,275 @@ function ServicesTab({ services, onEdit, onDelete }: { services: any[]; onEdit: 
 }
 
 /* ── PORTFOLIO TAB ── */
-function PortfolioTab({ items }: { items: any[] }) {
+function PortfolioTab({ items, artists, onEdit, onDelete }: { items: any[]; artists: any[]; onEdit: (p: any) => void; onDelete: (id: string) => void }) {
   if (!items.length) return <EmptyState text="Работ в портфолио пока нет" />;
 
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
       {items.map((p) => (
-        <div key={p.id} className="group relative aspect-square overflow-hidden rounded-lg border border-border bg-card">
-          <img src={p.imageUrl} alt={p.title || ""} className="h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-          <div className="absolute bottom-0 left-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity">
-            {p.style && <span className="text-[.6rem] font-semibold uppercase tracking-wider text-primary">{p.style}</span>}
-            {p.title && <p className="text-sm font-medium text-white">{p.title}</p>}
-            {p.artist?.name && <p className="text-xs text-white/60">{p.artist.name}</p>}
+        <div key={p.id} className="group relative overflow-hidden rounded-lg border border-border bg-card">
+          <div className="aspect-square overflow-hidden">
+            <img src={p.imageUrl} alt={p.title || ""} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+          </div>
+          <div className="p-3">
+            {p.title && <p className="text-sm font-semibold truncate">{p.title}</p>}
+            <div className="flex items-center gap-2 mt-1">
+              {p.style && <Badge variant="secondary" className="text-[.6rem]">{p.style}</Badge>}
+              {p.artist?.name && <span className="text-xs text-muted-foreground">{p.artist.name}</span>}
+            </div>
+            <div className="flex gap-1.5 mt-2">
+              <Button variant="outline" size="sm" className="flex-1 text-xs" onClick={() => onEdit(p)}>
+                <PencilIcon className="size-3 mr-1" /> Изменить
+              </Button>
+              <Button variant="ghost" size="sm" className="text-red-400 text-xs" onClick={() => { if (confirm("Удалить работу?")) onDelete(p.id); }}>
+                <Trash2Icon className="size-3" />
+              </Button>
+            </div>
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+/* ── SCHEDULE TAB ── */
+const ALL_TIMES = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
+const WEEKDAYS_FULL = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];
+const MONTHS_RU_SCHED = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+
+function pad2(n: number) { return n.toString().padStart(2, "0"); }
+function dateKey(y: number, m: number, d: number) { return `${y}-${pad2(m + 1)}-${pad2(d)}`; }
+
+function getMonday(date: Date): Date {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = (day === 0 ? -6 : 1) - day;
+  d.setDate(d.getDate() + diff);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function ScheduleTab({ artists }: { artists: any[] }) {
+  const [selectedArtist, setSelectedArtist] = useState<string>(artists[0]?.id || "");
+  const [schedule, setSchedule] = useState<Record<string, string[]>>({});
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  const [weekStart, setWeekStart] = useState<Date>(() => getMonday(new Date()));
+
+  // 7 days of the current week
+  const weekDays = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(weekStart);
+    d.setDate(d.getDate() + i);
+    return d;
+  });
+
+  const weekLabel = `${pad2(weekDays[0].getDate())} ${MONTHS_RU_SCHED[weekDays[0].getMonth()]} — ${pad2(weekDays[6].getDate())} ${MONTHS_RU_SCHED[weekDays[6].getMonth()]} ${weekDays[6].getFullYear()}`;
+
+  useEffect(() => {
+    if (!selectedArtist) return;
+    setLoading(true);
+    setSaved(false);
+    getArtistSchedule(selectedArtist)
+      .then((s) => setSchedule(s || {}))
+      .catch(() => setSchedule({}))
+      .finally(() => setLoading(false));
+  }, [selectedArtist]);
+
+  const toggleTime = (key: string, time: string) => {
+    setSaved(false);
+    setSchedule((prev) => {
+      const slots = prev[key] || [];
+      const has = slots.includes(time);
+      const updated = has ? slots.filter((t) => t !== time) : [...slots, time].sort();
+      const copy = { ...prev };
+      if (updated.length === 0) { delete copy[key]; return copy; }
+      return { ...copy, [key]: updated };
+    });
+  };
+
+  const toggleDate = (key: string) => {
+    setSaved(false);
+    setSchedule((prev) => {
+      const slots = prev[key] || [];
+      const allSelected = ALL_TIMES.every((t) => slots.includes(t));
+      const copy = { ...prev };
+      if (allSelected) { delete copy[key]; return copy; }
+      return { ...copy, [key]: [...ALL_TIMES] };
+    });
+  };
+
+  const prevWeek = () => {
+    setWeekStart((prev) => {
+      const d = new Date(prev);
+      d.setDate(d.getDate() - 7);
+      return d;
+    });
+  };
+
+  const nextWeek = () => {
+    setWeekStart((prev) => {
+      const d = new Date(prev);
+      d.setDate(d.getDate() + 7);
+      return d;
+    });
+  };
+
+  const goToday = () => setWeekStart(getMonday(new Date()));
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await updateArtistSchedule(selectedArtist, schedule);
+      setSaved(true);
+    } catch { /* ignore */ }
+    setSaving(false);
+  };
+
+  const isPast = (date: Date) => {
+    const t = new Date(); t.setHours(0, 0, 0, 0);
+    return date < t;
+  };
+
+  if (!artists.length) return <EmptyState text="Сначала добавьте мастеров" />;
+
+  return (
+    <div className="space-y-6">
+      {/* Artist selector */}
+      <div className="flex flex-wrap items-center gap-3">
+        <span className="text-sm text-muted-foreground">Мастер:</span>
+        {artists.map((a) => (
+          <button
+            key={a.id}
+            onClick={() => setSelectedArtist(a.id)}
+            className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+              selectedArtist === a.id
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {a.photoUrl ? (
+              <img src={a.photoUrl} alt="" className="size-5 rounded-full object-cover" />
+            ) : (
+              <div className="size-5 rounded-full bg-primary/20 flex items-center justify-center text-[.6rem] font-bold">
+                {a.name?.charAt(0)}
+              </div>
+            )}
+            {a.name}
+          </button>
+        ))}
+      </div>
+
+      {loading ? (
+        <div className="text-center py-10 text-muted-foreground">Загрузка...</div>
+      ) : (
+        <>
+          {/* Week navigation */}
+          <div className="flex items-center justify-between">
+            <button onClick={prevWeek} className="rounded-lg px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+              ← Назад
+            </button>
+            <div className="flex items-center gap-3">
+              <span className="text-lg font-semibold">{weekLabel}</span>
+              <button onClick={goToday} className="rounded-md px-3 py-1 text-xs bg-muted text-muted-foreground hover:text-foreground transition-colors">
+                Сегодня
+              </button>
+            </div>
+            <button onClick={nextWeek} className="rounded-lg px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+              Вперёд →
+            </button>
+          </div>
+
+          {/* Schedule grid — 7 days × times */}
+          <div className="rounded-lg border border-border bg-card overflow-hidden">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="text-left p-4 font-medium text-muted-foreground w-48">День</th>
+                  {ALL_TIMES.map((t) => (
+                    <th key={t} className="p-3 font-medium text-muted-foreground text-center">{t}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {weekDays.map((date, i) => {
+                  const key = dateKey(date.getFullYear(), date.getMonth(), date.getDate());
+                  const daySlots = schedule[key] || [];
+                  const allSelected = ALL_TIMES.every((t) => daySlots.includes(t));
+                  const past = isPast(date);
+                  const isWeekend = i >= 5;
+                  const isToday = date.toDateString() === new Date().toDateString();
+
+                  return (
+                    <tr key={key} className={`border-b border-border last:border-0 transition-colors ${past ? "opacity-40" : "hover:bg-muted/30"} ${isWeekend ? "bg-muted/10" : ""}`}>
+                      <td className="p-4">
+                        <button
+                          onClick={() => !past && toggleDate(key)}
+                          disabled={past}
+                          className="flex items-center gap-3 text-left hover:text-primary transition-colors disabled:cursor-not-allowed disabled:hover:text-inherit"
+                        >
+                          <div className={`size-5 rounded border flex items-center justify-center transition-colors ${
+                            allSelected ? "bg-primary border-primary" : daySlots.length > 0 ? "border-primary bg-primary/20" : "border-border"
+                          }`}>
+                            {allSelected && <CheckIcon className="size-3.5 text-primary-foreground" />}
+                          </div>
+                          <div>
+                            <span className={`font-semibold text-base ${isWeekend ? "text-orange-400" : ""} ${isToday ? "text-primary" : ""}`}>
+                              {pad2(date.getDate())}.{pad2(date.getMonth() + 1)}
+                            </span>
+                            <span className={`ml-2 text-sm ${isToday ? "text-primary" : "text-muted-foreground"}`}>
+                              {WEEKDAYS_FULL[i]}
+                              {isToday && " · сегодня"}
+                            </span>
+                          </div>
+                        </button>
+                      </td>
+                      {ALL_TIMES.map((t) => {
+                        const active = daySlots.includes(t);
+                        return (
+                          <td key={t} className="p-2 text-center">
+                            <button
+                              onClick={() => !past && toggleTime(key, t)}
+                              disabled={past}
+                              className={`w-10 h-10 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                active
+                                  ? "bg-primary/20 text-primary border-2 border-primary/50 shadow-[0_0_8px_rgba(34,197,94,0.15)]"
+                                  : past
+                                    ? "bg-transparent text-muted-foreground/30 border border-transparent"
+                                    : "bg-muted/50 text-muted-foreground border border-transparent hover:border-border hover:text-foreground hover:bg-muted"
+                              }`}
+                            >
+                              {active ? "✓" : "—"}
+                            </button>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Save */}
+          <div className="flex items-center gap-3">
+            <Button onClick={handleSave} disabled={saving}>
+              {saving ? "Сохраняем..." : "Сохранить график"}
+            </Button>
+            {saved && (
+              <span className="flex items-center gap-1 text-sm text-green-400">
+                <CheckIcon className="size-4" /> Сохранено
+              </span>
+            )}
+          </div>
+
+          <p className="text-xs text-muted-foreground">
+            Кликните на дату слева, чтобы выделить/снять все часы. Листайте по неделям кнопками «Назад» и «Вперёд».
+            Выходные подсвечены оранжевым. Клиенты смогут записаться только на отмеченные слоты.
+          </p>
+        </>
+      )}
     </div>
   );
 }
@@ -354,15 +634,19 @@ function ArtistForm({ initial, onSave }: { initial?: any; onSave: (data: any) =>
   const [bio, setBio] = useState(initial?.bio || "");
   const [photoUrl, setPhotoUrl] = useState(initial?.photoUrl || "");
   const [styles, setStyles] = useState(initial?.styles?.join(", ") || "");
+  const [uploading, setUploading] = useState(false);
 
   return (
     <form onSubmit={(e) => { e.preventDefault(); onSave({ name, bio, photoUrl, styles: styles.split(",").map((s: string) => s.trim()).filter(Boolean) }); }} className="space-y-4">
       <h2 className="text-lg font-bold">{initial ? "Редактировать мастера" : "Новый мастер"}</h2>
       <Input label="Имя *" value={name} onChange={setName} required />
       <Input label="Описание" value={bio} onChange={setBio} />
-      <Input label="URL фото" value={photoUrl} onChange={setPhotoUrl} placeholder="https://..." />
+      <div>
+        <label className="block text-sm font-medium text-muted-foreground mb-1">Фото</label>
+        <ImageUpload value={photoUrl} onChange={setPhotoUrl} uploading={uploading} setUploading={setUploading} />
+      </div>
       <Input label="Стили (через запятую)" value={styles} onChange={setStyles} placeholder="Реализм, Графика, Ориентал" />
-      <Button type="submit" className="w-full">{initial ? "Сохранить" : "Создать"}</Button>
+      <Button type="submit" className="w-full" disabled={uploading}>{initial ? "Сохранить" : "Создать"}</Button>
     </form>
   );
 }
@@ -382,6 +666,137 @@ function ServiceForm({ initial, onSave }: { initial?: any; onSave: (data: any) =
       <Input label="URL изображения" value={imageUrl} onChange={setImageUrl} placeholder="https://..." />
       <Button type="submit" className="w-full">{initial ? "Сохранить" : "Создать"}</Button>
     </form>
+  );
+}
+
+function PortfolioForm({ initial, artists, onSave }: { initial?: any; artists: any[]; onSave: (data: any) => void }) {
+  const [imageUrl, setImageUrl] = useState(initial?.imageUrl || "");
+  const [title, setTitle] = useState(initial?.title || "");
+  const [style, setStyle] = useState(initial?.style || "");
+  const [artistId, setArtistId] = useState(initial?.artistId || artists[0]?.id || "");
+  const [uploading, setUploading] = useState(false);
+
+  return (
+    <form onSubmit={(e) => { e.preventDefault(); onSave({ imageUrl, title, style, artistId }); }} className="space-y-4">
+      <h2 className="text-lg font-bold">{initial ? "Редактировать работу" : "Новая работа"}</h2>
+      <ImageUpload value={imageUrl} onChange={setImageUrl} uploading={uploading} setUploading={setUploading} />
+      <Input label="Название" value={title} onChange={setTitle} placeholder="Например: Реализм на предплечье" />
+      <Input label="Стиль" value={style} onChange={setStyle} placeholder="Реализм, Графика, Япония..." />
+      <div>
+        <label className="block text-sm font-medium text-muted-foreground mb-1">Мастер *</label>
+        <select
+          value={artistId}
+          onChange={(e) => setArtistId(e.target.value)}
+          className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+          required
+        >
+          {artists.map((a) => (
+            <option key={a.id} value={a.id}>{a.name}</option>
+          ))}
+        </select>
+      </div>
+      <Button type="submit" className="w-full" disabled={uploading || !imageUrl}>{initial ? "Сохранить" : "Добавить"}</Button>
+    </form>
+  );
+}
+
+/* ── Image Upload ── */
+function ImageUpload({ value, onChange, uploading, setUploading }: { value: string; onChange: (url: string) => void; uploading: boolean; setUploading: (v: boolean) => void }) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [dragOver, setDragOver] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleFile = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      setError("Только изображения (JPG, PNG, WebP)");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Максимальный размер — 5 МБ");
+      return;
+    }
+    setError(null);
+    setUploading(true);
+    try {
+      const url = await uploadFile(file);
+      onChange(url);
+    } catch (e: any) {
+      setError(e.message || "Ошибка загрузки");
+    }
+    setUploading(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleFile(file);
+  };
+
+  return (
+    <div className="space-y-2">
+      {/* Preview */}
+      {value && (
+        <div className="relative rounded-lg overflow-hidden border border-border aspect-video">
+          <img src={value} alt="Превью" className="w-full h-full object-cover" />
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="absolute top-2 right-2 rounded-full bg-black/70 p-1 text-white hover:bg-black transition-colors"
+          >
+            <XIcon className="size-4" />
+          </button>
+        </div>
+      )}
+
+      {/* Drop zone */}
+      {!value && (
+        <div
+          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={handleDrop}
+          onClick={() => fileRef.current?.click()}
+          className={`flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 cursor-pointer transition-colors ${
+            dragOver
+              ? "border-primary bg-primary/5"
+              : "border-border hover:border-primary/50 hover:bg-muted/30"
+          }`}
+        >
+          {uploading ? (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <RefreshCwIcon className="size-5 animate-spin" />
+              Загружаем...
+            </div>
+          ) : (
+            <>
+              <UploadIcon className="size-8 text-muted-foreground mb-2" />
+              <p className="text-sm text-muted-foreground">Перетащите фото сюда или <span className="text-primary">нажмите для выбора</span></p>
+              <p className="text-xs text-muted-foreground/60 mt-1">JPG, PNG, WebP · до 5 МБ</p>
+            </>
+          )}
+        </div>
+      )}
+
+      <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleInputChange} />
+
+      {/* URL input as fallback */}
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-muted-foreground shrink-0">или URL:</span>
+        <input
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="flex-1 rounded-md border border-border bg-background px-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+          placeholder="https://..."
+        />
+      </div>
+
+      {error && <p className="text-xs text-red-400">{error}</p>}
+    </div>
   );
 }
 

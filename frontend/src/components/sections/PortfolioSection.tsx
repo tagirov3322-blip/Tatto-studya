@@ -1,16 +1,17 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { BGPattern } from "@/components/ui/bg-pattern";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
 import { TextReveal } from "@/components/animations/TextReveal";
+import { getPortfolio } from "@/lib/api";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-const portfolioItems = [
+const fallbackItems = [
   { img: "/gallery/1.jpg" },
   { img: "/gallery/2.jpg" },
   { img: "/gallery/3.jpg" },
@@ -21,7 +22,18 @@ const portfolioItems = [
 
 export function PortfolioSection() {
   const [hovered, setHovered] = useState<number | null>(null);
+  const [portfolioItems, setPortfolioItems] = useState(fallbackItems);
   const gridRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    getPortfolio()
+      .then((data) => {
+        if (data && data.length > 0) {
+          setPortfolioItems(data.map((item: any) => ({ img: item.imageUrl })));
+        }
+      })
+      .catch(() => {}); // fallback to hardcoded
+  }, []);
 
   useGSAP(() => {
     const cards = gridRef.current?.querySelectorAll(".portfolio-card");
@@ -39,7 +51,7 @@ export function PortfolioSection() {
         once: true,
       },
     });
-  }, { scope: gridRef });
+  }, { scope: gridRef, dependencies: [portfolioItems] });
 
   const row1 = portfolioItems.slice(0, 3);
   const row2 = portfolioItems.slice(3, 6);

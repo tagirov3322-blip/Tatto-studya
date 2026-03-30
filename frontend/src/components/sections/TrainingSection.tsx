@@ -53,7 +53,7 @@ export function TrainingSection() {
                       {tariff.features.map((f, i) => (<li key={i} className="flex items-center gap-3"><FilledCheck /><span>{f}</span></li>))}
                     </ul>
                     <div className="mt-auto relative">
-                      <Button className={cn('w-full', tariff.popular ? 'bg-green-600 text-white hover:bg-green-700 hover:shadow-[0_0_20px_rgba(34,197,94,0.3)]' : 'border-green-500/30 text-green-400 hover:bg-green-600 hover:text-white hover:border-green-600 hover:shadow-[0_0_20px_rgba(34,197,94,0.3)]')} variant={tariff.popular ? 'default' : 'outline'}>
+                      <Button className="w-full border-green-500/30 text-green-400 hover:bg-green-600 hover:text-white hover:border-green-600 hover:shadow-[0_0_20px_rgba(34,197,94,0.3)] transition-all duration-300" variant="outline">
                         {tariff.cta} <ArrowRightIcon className="size-4 ml-1" />
                       </Button>
                     </div>
