@@ -1,21 +1,15 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
+import React, { useState, useEffect } from "react";
 import { BGPattern } from "@/components/ui/bg-pattern";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
 import { TextReveal } from "@/components/animations/TextReveal";
 import { getPortfolio } from "@/lib/api";
 
-gsap.registerPlugin(useGSAP, ScrollTrigger);
-
 export function PortfolioSection() {
   const [hovered, setHovered] = useState<number | null>(null);
   const [portfolioItems, setPortfolioItems] = useState<{ img: string }[]>([]);
   const [loading, setLoading] = useState(true);
-  const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     getPortfolio()
@@ -28,28 +22,9 @@ export function PortfolioSection() {
       .finally(() => setLoading(false));
   }, []);
 
-  useGSAP(() => {
-    const cards = gridRef.current?.querySelectorAll(".portfolio-card");
-    if (!cards?.length) return;
-
-    gsap.from(cards, {
-      y: 50,
-      autoAlpha: 0,
-      duration: 0.6,
-      stagger: 0.12,
-      ease: "power3.out",
-      scrollTrigger: {
-        trigger: gridRef.current,
-        start: "top 80%",
-        once: true,
-      },
-    });
-  }, { scope: gridRef, dependencies: [portfolioItems] });
-
   const row1 = portfolioItems.slice(0, 3);
   const row2 = portfolioItems.slice(3, 6);
 
-  // Какой ряд содержит hovered карточку
   const hoveredRow = hovered !== null ? (hovered < 3 ? 0 : 1) : null;
 
   function getRowHeight(rowIndex: number) {
@@ -84,7 +59,6 @@ export function PortfolioSection() {
           <div className="text-center text-gray-500 py-20">Нет работ в портфолио</div>
         ) : (
           <div
-            ref={gridRef}
             className="flex flex-col gap-3"
             onMouseLeave={() => setHovered(null)}
           >
@@ -106,21 +80,23 @@ export function PortfolioSection() {
             </div>
 
             {/* Ряд 2 */}
-            <div
-              className="flex gap-3 transition-[height] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
-              style={{ height: getRowHeight(1) }}
-            >
-              {row2.map((item, i) => (
-                <Card
-                  key={i + 3}
-                  img={item.img}
-                  flex={getFlex(i + 3)}
-                  isActive={hovered === i + 3}
-                  isDimmed={hovered !== null && hovered !== i + 3}
-                  onHover={() => setHovered(i + 3)}
-                />
-              ))}
-            </div>
+            {row2.length > 0 && (
+              <div
+                className="flex gap-3 transition-[height] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                style={{ height: getRowHeight(1) }}
+              >
+                {row2.map((item, i) => (
+                  <Card
+                    key={i + 3}
+                    img={item.img}
+                    flex={getFlex(i + 3)}
+                    isActive={hovered === i + 3}
+                    isDimmed={hovered !== null && hovered !== i + 3}
+                    onHover={() => setHovered(i + 3)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -153,7 +129,6 @@ function Card({
     });
   };
 
-  // Градиентный бордер следует за курсором
   const borderGradient = isActive
     ? `radial-gradient(circle at ${mouse.x * 100}% ${mouse.y * 100}%, rgba(34,197,94,1) 0%, rgba(34,197,94,0.3) 45%, rgba(34,197,94,0.05) 100%)`
     : "none";
