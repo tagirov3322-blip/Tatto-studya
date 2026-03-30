@@ -841,3 +841,137 @@ function EmptyState({ text }: { text: string }) {
     </div>
   );
 }
+
+/* ── STATS TAB ── */
+const STATUS_COLORS: Record<string, string> = {
+  PENDING: "#eab308",
+  CONFIRMED: "#22c55e",
+  CANCELLED: "#ef4444",
+  COMPLETED: "#3b82f6",
+};
+const STATUS_LABELS: Record<string, string> = {
+  PENDING: "Ожидает",
+  CONFIRMED: "Подтверждена",
+  CANCELLED: "Отменена",
+  COMPLETED: "Завершена",
+};
+
+function StatsTab() {
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getStats().then(setStats).catch(() => {}).finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div className="text-center text-muted-foreground py-20">Загрузка...</div>;
+  if (!stats) return <div className="text-center text-muted-foreground py-20">Не удалось загрузить статистику</div>;
+
+  const { overview, byStatus, byArtist, daily } = stats;
+  const maxDaily = Math.max(...daily.map((d: any) => d.count), 1);
+  const maxArtist = Math.max(...byArtist.map((a: any) => a.count), 1);
+  const totalByStatus = byStatus.reduce((s: number, b: any) => s + b.count, 0) || 1;
+
+  return (
+    <div className="space-y-8">
+      {/* Карточки */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        {[
+          { label: "Всего заявок", value: overview.totalBookings },
+          { label: "За неделю", value: overview.weekBookings },
+          { label: "За месяц", value: overview.monthBookings },
+          { label: "Мастеров", value: overview.totalArtists },
+          { label: "Услуг", value: overview.totalServices },
+        ].map((c) => (
+          <div key={c.label} className="rounded-xl border border-border bg-card p-4">
+            <p className="text-sm text-muted-foreground">{c.label}</p>
+            <p className="text-3xl font-bold mt-1">{c.value}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Заявки по дням — столбчатая диаграмма */}
+      <div className="rounded-xl border border-border bg-card p-6">
+        <h3 className="text-lg font-semibold mb-4">Заявки за последний месяц</h3>
+        <div className="flex items-end gap-[2px] h-40">
+          {daily.map((d: any) => (
+            <div key={d.date} className="flex-1 flex flex-col items-center justify-end h-full group relative">
+              <div
+                className="w-full bg-green-500 rounded-t transition-all duration-300 min-h-[2px]"
+                style={{ height: `${(d.count / maxDaily) * 100}%` }}
+              />
+              <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-popover border border-border text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+                {d.date}: {d.count}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-between mt-2 text-xs text-muted-foreground">
+          <span>{daily[0]?.date}</span>
+          <span>{daily[daily.length - 1]?.date}</span>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* По статусам — круговая диаграмма */}
+        <div className="rounded-xl border border-border bg-card p-6">
+          <h3 className="text-lg font-semibold mb-4">По статусам</h3>
+          <div className="flex items-center gap-8">
+            <div className="relative w-32 h-32">
+              <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                {(() => {
+                  let offset = 0;
+                  return byStatus.map((s: any) => {
+                    const pct = (s.count / totalByStatus) * 100;
+                    const el = (
+                      <circle
+                        key={s.status}
+                        cx="18" cy="18" r="15.915"
+                        fill="none"
+                        stroke={STATUS_COLORS[s.status] || "#666"}
+                        strokeWidth="3"
+                        strokeDasharray={`${pct} ${100 - pct}`}
+                        strokeDashoffset={-offset}
+                      />
+                    );
+                    offset += pct;
+                    return el;
+                  });
+                })()}
+              </svg>
+            </div>
+            <div className="space-y-2">
+              {byStatus.map((s: any) => (
+                <div key={s.status} className="flex items-center gap-2 text-sm">
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: STATUS_COLORS[s.status] || "#666" }} />
+                  <span>{STATUS_LABELS[s.status] || s.status}: {s.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* По мастерам — горизонтальная диаграмма */}
+        <div className="rounded-xl border border-border bg-card p-6">
+          <h3 className="text-lg font-semibold mb-4">Популярные мастера</h3>
+          <div className="space-y-3">
+            {byArtist.map((a: any) => (
+              <div key={a.artistId}>
+                <div className="flex justify-between text-sm mb-1">
+                  <span>{a.name}</span>
+                  <span className="text-muted-foreground">{a.count}</span>
+                </div>
+                <div className="h-3 bg-muted rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-green-500 rounded-full transition-all duration-500"
+                    style={{ width: `${(a.count / maxArtist) * 100}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
