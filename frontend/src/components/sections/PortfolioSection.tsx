@@ -80,7 +80,7 @@ export function PortfolioSection() {
           >
             {/* Ряд 1 */}
             <div
-              className="flex gap-3 transition-[height] duration-300 ease-out"
+              className="flex gap-3 transition-[height] duration-400 ease-[cubic-bezier(0.4,0,0.2,1)]"
               style={{ height: getRowHeight(0) }}
             >
               {row1.map((item, i) => (
@@ -100,7 +100,7 @@ export function PortfolioSection() {
             {/* Ряд 2 */}
             {row2.length > 0 && (
               <div
-                className="flex gap-3 transition-[height] duration-300 ease-out"
+                className="flex gap-3 transition-[height] duration-400 ease-[cubic-bezier(0.4,0,0.2,1)]"
                 style={{ height: getRowHeight(1) }}
               >
                 {row2.map((item, i) => (
