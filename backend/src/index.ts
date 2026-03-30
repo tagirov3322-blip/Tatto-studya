@@ -17,6 +17,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 4000;
 
+// Trust proxy (Render, Vercel, etc.)
+app.set("trust proxy", 1);
+
 // Безопасность
 app.use(helmet()); // HTTP заголовки безопасности
 app.use(cors({
