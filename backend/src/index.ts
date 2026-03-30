@@ -5,6 +5,7 @@ import { artistRouter } from "./routes/artists";
 import { bookingRouter } from "./routes/bookings";
 import { portfolioRouter } from "./routes/portfolio";
 import { serviceRouter } from "./routes/services";
+import { notificationRouter } from "./routes/notifications";
 
 dotenv.config();
 
