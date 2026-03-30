@@ -32,6 +32,19 @@ bookingRouter.post("/", async (req, res) => {
   res.status(201).json(booking);
 });
 
+// Получить занятые слоты мастера (публичный)
+bookingRouter.get("/slots/:artistId", async (req, res) => {
+  const bookings = await prisma.booking.findMany({
+    where: {
+      artistId: req.params.artistId,
+      status: { in: ["PENDING", "CONFIRMED"] },
+      date: { gte: new Date() },
+    },
+    select: { date: true },
+  });
+  res.json(bookings.map((b) => b.date.toISOString()));
+});
+
 // Получить все записи (для админки)
 bookingRouter.get("/", requireAdmin, async (_req, res) => {
   const bookings = await prisma.booking.findMany({

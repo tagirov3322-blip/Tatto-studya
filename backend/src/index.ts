@@ -29,13 +29,13 @@ const loginLimiter = rateLimit({
 });
 app.use("/api/auth/login", loginLimiter);
 
-// Защита от спама заявками — 3 заявки за час с одного IP
+// Защита от спама заявками — 20 заявок за час с одного IP (только POST)
 const bookingLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
-  max: 3,
+  max: 20,
   message: { error: "Слишком много заявок. Попробуйте позже" },
 });
-app.use("/api/bookings", bookingLimiter);
+app.post("/api/bookings", bookingLimiter);
 
 // Общий лимит — 100 запросов в минуту
 const generalLimiter = rateLimit({

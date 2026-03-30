@@ -1,0 +1,142 @@
+You are given a task to integrate an existing React component in the codebase
+
+The codebase should support:
+- shadcn project structure  
+- Tailwind CSS
+- Typescript
+
+If it doesn't, provide instructions on how to setup project via shadcn CLI, install Tailwind or Typescript.
+
+Determine the default path for components and styles. 
+If default path for components is not /components/ui, provide instructions on why it's important to create this folder
+Copy-paste this component to /components/ui folder:
+```tsx
+cta-3.tsx
+import { ArrowRightIcon, PlusIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+export function CallToAction() {
+  return (
+    <div className="relative mx-auto flex w-full max-w-3xl flex-col justify-between gap-y-6 border-y bg-[radial-gradient(35%_80%_at_25%_0%,--theme(--color-foreground/.08),transparent)] px-4 py-8">
+      <PlusIcon
+        className="absolute top-[-12.5px] left-[-11.5px] z-1 size-6"
+        strokeWidth={1}
+      />
+      <PlusIcon
+        className="absolute top-[-12.5px] right-[-11.5px] z-1 size-6"
+        strokeWidth={1}
+      />
+      <PlusIcon
+        className="absolute bottom-[-12.5px] left-[-11.5px] z-1 size-6"
+        strokeWidth={1}
+      />
+      <PlusIcon
+        className="absolute right-[-11.5px] bottom-[-12.5px] z-1 size-6"
+        strokeWidth={1}
+      />
+
+      <div className="-inset-y-6 pointer-events-none absolute left-0 w-px border-l" />
+      <div className="-inset-y-6 pointer-events-none absolute right-0 w-px border-r" />
+
+      <div className="-z-10 absolute top-0 left-1/2 h-full border-l border-dashed" />
+
+
+      <div className="space-y-1">
+        <h2 className="text-center font-bold text-2xl">
+          Let your plans shape the future.
+        </h2>
+        <p className="text-center text-muted-foreground">
+          Start your free trial today. No credit card required.
+        </p>
+      </div>
+
+      <div className="flex items-center justify-center gap-2">
+        <Button variant="outline">Contact Sales</Button>
+        <Button>
+          Get Started <ArrowRightIcon className="size-4 ml-1" />
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+
+demo.tsx
+import { CallToAction } from "@/components/ui/cta-3";
+
+export default function DemoOne() {
+return (
+    <div className="w-full flex min-h-screen items-center justify-center p-4">
+      <CallToAction />
+    </div>
+  );
+}
+
+```
+
+Copy-paste these files for dependencies:
+```tsx
+shadcn/button
+import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
+import { cva, type VariantProps } from "class-variance-authority"
+
+import { cn } from "@/lib/utils"
+
+const buttonVariants = cva(
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        destructive:
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        outline:
+          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+        secondary:
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+        link: "text-primary underline-offset-4 hover:underline",
+      },
+      size: {
+        default: "h-10 px-4 py-2",
+        sm: "h-9 rounded-md px-3",
+        lg: "h-11 rounded-md px-8",
+        icon: "h-10 w-10",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  },
+)
+
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean
+}
+
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "button"
+    return (
+      <Comp
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        {...props}
+      />
+    )
+  },
+)
+Button.displayName = "Button"
+
+export { Button, buttonVariants }
+
+```
+
+Install NPM dependencies:
+```bash
+lucide-react, @radix-ui/react-slot, class-variance-authority
+```
