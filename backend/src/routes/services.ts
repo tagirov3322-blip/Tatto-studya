@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { prisma } from "../prismaClient";
+import { requireAdmin } from "../middleware/auth";
 
 export const serviceRouter = Router();
 
