@@ -11,18 +11,10 @@ import { getPortfolio } from "@/lib/api";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-const fallbackItems = [
-  { img: "/gallery/1.jpg" },
-  { img: "/gallery/2.jpg" },
-  { img: "/gallery/3.jpg" },
-  { img: "/gallery/4.jpg" },
-  { img: "/gallery/5.jpg" },
-  { img: "/gallery/6.jpg" },
-];
-
 export function PortfolioSection() {
   const [hovered, setHovered] = useState<number | null>(null);
-  const [portfolioItems, setPortfolioItems] = useState(fallbackItems);
+  const [portfolioItems, setPortfolioItems] = useState<{ img: string }[]>([]);
+  const [loading, setLoading] = useState(true);
   const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -32,7 +24,8 @@ export function PortfolioSection() {
           setPortfolioItems(data.map((item: any) => ({ img: item.imageUrl })));
         }
       })
-      .catch(() => {}); // fallback to hardcoded
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   useGSAP(() => {
