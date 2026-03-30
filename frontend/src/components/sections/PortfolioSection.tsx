@@ -175,7 +175,7 @@ function Card({
         <img
           src={img}
           alt=""
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-400 ease-[cubic-bezier(0.4,0,0.2,1)]"
           style={{ transform: isActive ? "scale(1.06)" : "scale(1)" }}
         />
         <div
