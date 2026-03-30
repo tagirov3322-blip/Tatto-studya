@@ -179,7 +179,7 @@ function Card({
           style={{ transform: isActive ? "scale(1.06)" : "scale(1)" }}
         />
         <div
-          className="absolute inset-0 transition-colors duration-500"
+          className="absolute inset-0 transition-colors duration-200"
           style={{
             backgroundColor: isDimmed ? "rgba(0,0,0,0.65)" : isActive ? "rgba(0,0,0,0)" : "rgba(0,0,0,0.1)",
           }}
