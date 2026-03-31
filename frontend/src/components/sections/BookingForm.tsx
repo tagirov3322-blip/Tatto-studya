@@ -216,8 +216,9 @@ export function BookingForm() {
                 <span className="text-xs text-neutral-400 leading-relaxed">
                   Я соглашаюсь с{" "}
                   <a href="/terms" target="_blank" className="text-green-400 underline hover:text-green-300">пользовательским соглашением</a>
-                  {" "}и{" "}
+                  ,{" "}
                   <a href="/privacy" target="_blank" className="text-green-400 underline hover:text-green-300">политикой конфиденциальности</a>
+                  {" "}и даю согласие на обработку моих персональных данных
                 </span>
               </label>
 
