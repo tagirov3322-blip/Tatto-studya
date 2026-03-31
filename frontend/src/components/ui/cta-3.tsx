@@ -36,12 +36,12 @@ export function CallToAction() {
       </div>
 
       <div className="flex items-center justify-center gap-2">
-        <Button variant="outline" className="border-green-500/30 text-green-400 hover:bg-green-500/10 hover:text-green-300">
+        <a href="#contacts"><Button variant="outline" className="border-green-500/30 text-green-400 hover:bg-green-500/10 hover:text-green-300">
           Задать вопрос
-        </Button>
-        <Button className="bg-green-600 text-white hover:bg-green-700">
+        </Button></a>
+        <a href="#booking"><Button className="bg-green-600 text-white hover:bg-green-700">
           Записаться <ArrowRightIcon className="size-4 ml-1" />
-        </Button>
+        </Button></a>
       </div>
     </div>
   );
