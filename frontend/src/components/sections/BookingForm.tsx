@@ -22,6 +22,7 @@ export function BookingForm() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [agreed, setAgreed] = useState(false);
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   const [artistSchedule, setArtistSchedule] = useState<Record<string, string[]> | null>(null);
 
