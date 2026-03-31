@@ -129,7 +129,7 @@ export function PortfolioSection() {
 
             {row2.length > 0 && (
               <div
-                className="flex gap-3"
+                className="hidden md:flex gap-3"
                 style={{
                   height: getRowHeight(1),
                   transition: "height 0.6s cubic-bezier(0.22, 1, 0.36, 1)",
@@ -147,6 +147,15 @@ export function PortfolioSection() {
                 ))}
               </div>
             )}
+
+            {/* Mobile grid */}
+            <div className="grid grid-cols-2 gap-2 md:hidden">
+              {portfolioItems.map((item, i) => (
+                <div key={i} className="rounded-xl overflow-hidden aspect-square border border-green-500/10">
+                  <img src={item.img} alt="" className="w-full h-full object-cover" />
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
