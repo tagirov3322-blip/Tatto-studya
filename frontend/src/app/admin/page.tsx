@@ -189,7 +189,7 @@ export default function AdminPage() {
         )}
 
         {/* Content */}
-        {tab === "bookings" && <BookingsTab bookings={bookings} onUpdate={load} />}
+        {tab === "bookings" && <BookingsTab bookings={bookings} artists={artists} onUpdate={load} />}
         {tab === "artists" && <ArtistsTab artists={artists} onEdit={(a) => { setEditingArtist(a); setShowArtistForm(true); }} onDelete={async (id) => { await deleteArtist(id); load(); }} />}
         {tab === "services" && <ServicesTab services={services} onEdit={(s) => { setEditingService(s); setShowServiceForm(true); }} onDelete={async (id) => { await deleteService(id); load(); }} />}
         {tab === "portfolio" && <PortfolioTab items={portfolio} artists={artists} onEdit={(p) => { setEditingPortfolio(p); setShowPortfolioForm(true); }} onDelete={async (id) => { await deletePortfolioItem(id); load(); }} />}
@@ -247,7 +247,13 @@ export default function AdminPage() {
 }
 
 /* ── BOOKINGS TAB ── */
-function BookingsTab({ bookings, onUpdate }: { bookings: any[]; onUpdate: () => void }) {
+function BookingsTab({ bookings, artists, onUpdate }: { bookings: any[]; artists: any[]; onUpdate: () => void }) {
+  const [filterArtist, setFilterArtist] = useState<string>("all");
+  const [filterSpecialty, setFilterSpecialty] = useState<string>("all");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<string>("date-desc");
+  const [search, setSearch] = useState("");
+
   const handleStatus = async (id: string, status: string) => {
     await updateBooking(id, { status });
     onUpdate();
@@ -259,42 +265,129 @@ function BookingsTab({ bookings, onUpdate }: { bookings: any[]; onUpdate: () => 
     onUpdate();
   };
 
-  if (!bookings.length) return <EmptyState text="Заявок пока нет" />;
+  // Filter
+  let filtered = bookings.filter((b) => {
+    if (filterArtist !== "all" && b.artistId !== filterArtist) return false;
+    if (filterSpecialty !== "all") {
+      const artistSpec = artists.find((a) => a.id === b.artistId)?.specialty || "tattoo";
+      if (filterSpecialty === "tattoo" && artistSpec === "piercing") return false;
+      if (filterSpecialty === "piercing" && artistSpec === "tattoo") return false;
+      if (filterSpecialty !== "both" && filterSpecialty !== artistSpec && artistSpec !== "both") return false;
+    }
+    if (filterStatus !== "all" && b.status !== filterStatus) return false;
+    if (search) {
+      const q = search.toLowerCase();
+      if (!b.name?.toLowerCase().includes(q) && !b.phone?.includes(q) && !b.email?.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+
+  // Sort
+  filtered = [...filtered].sort((a, b) => {
+    if (sortBy === "date-desc") return new Date(b.date).getTime() - new Date(a.date).getTime();
+    if (sortBy === "date-asc") return new Date(a.date).getTime() - new Date(b.date).getTime();
+    if (sortBy === "created-desc") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    if (sortBy === "created-asc") return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    if (sortBy === "name") return (a.name || "").localeCompare(b.name || "");
+    return 0;
+  });
 
   return (
-    <div className="space-y-3">
-      {bookings.map((b) => (
-        <div key={b.id} className="rounded-lg border border-border bg-card p-4">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="font-semibold">{b.name}</p>
-              <p className="text-sm text-muted-foreground">{b.phone} {b.email && `/ ${b.email}`}</p>
-              {b.message && <p className="mt-1 text-sm text-muted-foreground italic">{b.message}</p>}
-              <p className="mt-1 text-xs text-muted-foreground">
-                Мастер: {b.artist?.name || "—"} / Дата: {new Date(b.date).toLocaleDateString("ru", { timeZone: "UTC" })} в {new Date(b.date).toLocaleTimeString("ru", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })}
-              </p>
+    <div className="space-y-4">
+      {/* Filters */}
+      <div className="flex flex-wrap gap-3 items-center">
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Поиск по имени, телефону, email..."
+          className="rounded-md border border-border bg-background px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none w-64"
+        />
+        <select
+          value={filterArtist}
+          onChange={(e) => setFilterArtist(e.target.value)}
+          className="rounded-md border border-border bg-background px-3 py-1.5 text-sm"
+        >
+          <option value="all">Все мастера</option>
+          {artists.map((a) => (
+            <option key={a.id} value={a.id}>{a.name}</option>
+          ))}
+        </select>
+        <select
+          value={filterSpecialty}
+          onChange={(e) => setFilterSpecialty(e.target.value)}
+          className="rounded-md border border-border bg-background px-3 py-1.5 text-sm"
+        >
+          <option value="all">Все направления</option>
+          <option value="tattoo">Тату</option>
+          <option value="piercing">Пирсинг</option>
+          <option value="both">Тату и пирсинг</option>
+        </select>
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          className="rounded-md border border-border bg-background px-3 py-1.5 text-sm"
+        >
+          <option value="all">Все статусы</option>
+          <option value="PENDING">Ожидает</option>
+          <option value="CONFIRMED">Подтверждена</option>
+          <option value="CANCELLED">Отменена</option>
+          <option value="COMPLETED">Завершена</option>
+        </select>
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="rounded-md border border-border bg-background px-3 py-1.5 text-sm"
+        >
+          <option value="date-desc">Дата сеанса ↓</option>
+          <option value="date-asc">Дата сеанса ↑</option>
+          <option value="created-desc">Новые сначала</option>
+          <option value="created-asc">Старые сначала</option>
+          <option value="name">По имени</option>
+        </select>
+        <span className="text-xs text-muted-foreground ml-auto">
+          {filtered.length} из {bookings.length}
+        </span>
+      </div>
+
+      {/* List */}
+      {filtered.length === 0 ? (
+        <EmptyState text={bookings.length === 0 ? "Заявок пока нет" : "Ничего не найдено"} />
+      ) : (
+        <div className="space-y-3">
+          {filtered.map((b) => (
+            <div key={b.id} className="rounded-lg border border-border bg-card p-4">
+              <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <p className="font-semibold">{b.name}</p>
+                  <p className="text-sm text-muted-foreground">{b.phone} {b.email && `/ ${b.email}`}</p>
+                  {b.message && <p className="mt-1 text-sm text-muted-foreground italic">{b.message}</p>}
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Мастер: {b.artist?.name || "—"} / Дата: {new Date(b.date).toLocaleDateString("ru", { timeZone: "UTC" })} в {new Date(b.date).toLocaleTimeString("ru", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${statusColors[b.status] || ""}`}>
+                    {statusLabels[b.status] || b.status}
+                  </span>
+                  <select
+                    value={b.status}
+                    onChange={(e) => handleStatus(b.id, e.target.value)}
+                    className="rounded-md border border-border bg-background px-2 py-1 text-xs"
+                  >
+                    <option value="PENDING">Ожидает</option>
+                    <option value="CONFIRMED">Подтверждена</option>
+                    <option value="CANCELLED">Отменена</option>
+                    <option value="COMPLETED">Завершена</option>
+                  </select>
+                  <Button variant="ghost" size="icon" onClick={() => handleDelete(b.id)} className="text-red-400 hover:text-red-300">
+                    <Trash2Icon className="size-4" />
+                  </Button>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${statusColors[b.status] || ""}`}>
-                {statusLabels[b.status] || b.status}
-              </span>
-              <select
-                value={b.status}
-                onChange={(e) => handleStatus(b.id, e.target.value)}
-                className="rounded-md border border-border bg-background px-2 py-1 text-xs"
-              >
-                <option value="PENDING">Ожидает</option>
-                <option value="CONFIRMED">Подтверждена</option>
-                <option value="CANCELLED">Отменена</option>
-                <option value="COMPLETED">Завершена</option>
-              </select>
-              <Button variant="ghost" size="icon" onClick={() => handleDelete(b.id)} className="text-red-400 hover:text-red-300">
-                <Trash2Icon className="size-4" />
-              </Button>
-            </div>
-          </div>
+          ))}
         </div>
-      ))}
+      )}
     </div>
   );
 }
@@ -309,7 +402,12 @@ function ArtistsTab({ artists, onEdit, onDelete }: { artists: any[]; onEdit: (a:
         <div key={a.id} className="rounded-lg border border-border bg-card overflow-hidden">
           {a.photoUrl && <img src={a.photoUrl} alt={a.name} className="h-40 w-full object-cover" />}
           <div className="p-4">
-            <h3 className="font-semibold">{a.name}</h3>
+            <div className="flex items-center gap-2">
+              <h3 className="font-semibold">{a.name}</h3>
+              <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[.6rem] font-semibold ${specialtyColors[a.specialty] || specialtyColors.tattoo}`}>
+                {specialtyLabels[a.specialty] || "Тату"}
+              </span>
+            </div>
             {a.bio && <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{a.bio}</p>}
             {a.styles?.length > 0 && (
               <div className="mt-2 flex flex-wrap gap-1">
@@ -631,22 +729,45 @@ function ScheduleTab({ artists }: { artists: any[] }) {
 }
 
 /* ── FORMS ── */
+const specialtyLabels: Record<string, string> = { tattoo: "Тату", piercing: "Пирсинг", both: "Тату и пирсинг" };
+const specialtyColors: Record<string, string> = { tattoo: "bg-green-500/20 text-green-400 border-green-500/30", piercing: "bg-blue-500/20 text-blue-400 border-blue-500/30", both: "bg-purple-500/20 text-purple-400 border-purple-500/30" };
+
 function ArtistForm({ initial, onSave }: { initial?: any; onSave: (data: any) => void }) {
   const [name, setName] = useState(initial?.name || "");
   const [bio, setBio] = useState(initial?.bio || "");
   const [photoUrl, setPhotoUrl] = useState(initial?.photoUrl || "");
   const [styles, setStyles] = useState(initial?.styles?.join(", ") || "");
+  const [specialty, setSpecialty] = useState(initial?.specialty || "tattoo");
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   return (
-    <form onSubmit={async (e) => { e.preventDefault(); if (submitting) return; setSubmitting(true); await onSave({ name, bio, photoUrl, styles: styles.split(",").map((s: string) => s.trim()).filter(Boolean) }); }} className="space-y-4">
+    <form onSubmit={async (e) => { e.preventDefault(); if (submitting) return; setSubmitting(true); await onSave({ name, bio, photoUrl, styles: styles.split(",").map((s: string) => s.trim()).filter(Boolean), specialty }); }} className="space-y-4">
       <h2 className="text-lg font-bold">{initial ? "Редактировать мастера" : "Новый мастер"}</h2>
       <Input label="Имя *" value={name} onChange={setName} required />
       <Input label="Описание" value={bio} onChange={setBio} />
       <div>
         <label className="block text-sm font-medium text-muted-foreground mb-1">Фото</label>
         <ImageUpload value={photoUrl} onChange={setPhotoUrl} uploading={uploading} setUploading={setUploading} />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-muted-foreground mb-1">Специализация *</label>
+        <div className="flex gap-2">
+          {(["tattoo", "piercing", "both"] as const).map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => setSpecialty(s)}
+              className={`rounded-full px-4 py-2 text-sm font-medium border transition-colors ${
+                specialty === s
+                  ? specialtyColors[s]
+                  : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/30"
+              }`}
+            >
+              {specialtyLabels[s]}
+            </button>
+          ))}
+        </div>
       </div>
       <Input label="Стили (через запятую)" value={styles} onChange={setStyles} placeholder="Реализм, Графика, Ориентал" />
       <Button type="submit" className="w-full" disabled={uploading || submitting}>{submitting ? "Сохранение..." : initial ? "Сохранить" : "Создать"}</Button>

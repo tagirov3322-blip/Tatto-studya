@@ -1,29 +1,38 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { GlowBorder } from "@/components/ui/glow-border";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
 import { TextReveal } from "@/components/animations/TextReveal";
 import { getArtists } from "@/lib/api";
 
-// Fallback если API недоступен
-const fallbackMasters = [
-  { name: "Ника Вэй", styles: ["Реализм", "нео-традишнл"], bio: "Тату-мастер · 5 лет", photoUrl: "/mastera/1.jpg" },
-  { name: "Максим Сергеев", styles: ["Графика", "дотворк"], bio: "Тату-мастер · 7 лет", photoUrl: "/mastera/2.jpg" },
-  { name: "Регина Менина", styles: ["Блэкворк", "геометрия"], bio: "Тату-мастер · 9 лет", photoUrl: "/mastera/3.jpg" },
-  { name: "Алина Мори", styles: ["Леттеринг", "минимализм"], bio: "Пирсинг-мастер · 5 лет", photoUrl: "/mastera/4.jpg" },
-];
+const TABS = ["tattoo", "piercing"] as const;
+type Tab = (typeof TABS)[number];
+const TAB_LABELS: Record<Tab, string> = { tattoo: "Мастера тату", piercing: "Мастера пирсинга" };
 
 export function MastersSection() {
-  const [masters, setMasters] = useState<any[]>(fallbackMasters);
+  const [allMasters, setAllMasters] = useState<any[]>([]);
+  const [tab, setTab] = useState<Tab>("tattoo");
 
   useEffect(() => {
     getArtists()
       .then((data) => {
-        if (data && data.length > 0) setMasters(data);
+        if (data && data.length > 0) setAllMasters(data);
       })
       .catch(() => {});
   }, []);
+
+  const filtered = allMasters.filter((m) => {
+    if (tab === "tattoo") return m.specialty === "tattoo" || m.specialty === "both" || !m.specialty;
+    return m.specialty === "piercing" || m.specialty === "both";
+  });
+
+  const switchTab = (dir: 1 | -1) => {
+    const idx = TABS.indexOf(tab);
+    const next = (idx + dir + TABS.length) % TABS.length;
+    setTab(TABS[next]);
+  };
 
   return (
     <section id="masters" className="relative bg-black py-24 px-4 overflow-hidden border-y border-green-500/30">
@@ -34,9 +43,49 @@ export function MastersSection() {
           <ScrollReveal delay={0.2}><p className="text-neutral-400 mt-4 max-w-2xl mx-auto text-base">Каждый специализируется на своём направлении. Подберём мастера под ваш стиль.</p></ScrollReveal>
         </div>
 
-          <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 ${masters.length >= 4 ? "lg:grid-cols-4" : masters.length === 3 ? "lg:grid-cols-3" : "lg:grid-cols-2 max-w-3xl mx-auto"}`}>
-            {masters.map((master, i) => (
-              <ScrollReveal key={master.id || master.name} delay={i * 0.12}>
+        {/* Tab switcher */}
+        <ScrollReveal delay={0.3}>
+          <div className="flex items-center justify-center gap-4 mb-10">
+            <button
+              onClick={() => switchTab(-1)}
+              className="p-2 rounded-full border border-green-500/20 text-neutral-400 hover:text-green-400 hover:border-green-500/50 hover:bg-green-500/5 transition-all duration-300"
+            >
+              <ChevronLeftIcon className="size-5" />
+            </button>
+
+            <div className="relative w-52 h-10 flex items-center justify-center overflow-hidden">
+              <span
+                key={tab}
+                className="text-lg font-semibold text-white animate-[fadeSlide_0.3s_ease-out]"
+              >
+                {TAB_LABELS[tab]}
+              </span>
+            </div>
+
+            <button
+              onClick={() => switchTab(1)}
+              className="p-2 rounded-full border border-green-500/20 text-neutral-400 hover:text-green-400 hover:border-green-500/50 hover:bg-green-500/5 transition-all duration-300"
+            >
+              <ChevronRightIcon className="size-5" />
+            </button>
+          </div>
+
+        </ScrollReveal>
+
+        {/* Cards */}
+        <div
+          key={tab}
+          className={`grid grid-cols-1 sm:grid-cols-2 gap-4 animate-[fadeSlide_0.4s_ease-out] ${
+            filtered.length >= 4 ? "lg:grid-cols-4" : filtered.length === 3 ? "lg:grid-cols-3" : "lg:grid-cols-2 max-w-3xl mx-auto"
+          }`}
+        >
+          {filtered.length === 0 ? (
+            <div className="col-span-full text-center py-16 text-neutral-500">
+              Мастеров в этой категории пока нет
+            </div>
+          ) : (
+            filtered.map((master, i) => (
+              <div key={master.id || master.name}>
                 <GlowBorder className="h-full" hoverScale={1.05}>
                   <div className="p-4 flex flex-col h-full group">
                     <div className="w-full aspect-[3/4] overflow-hidden rounded-xl mb-4 bg-neutral-900">
@@ -52,7 +101,7 @@ export function MastersSection() {
                     <p className="text-green-400 text-sm mt-1">{master.styles?.join(", ") || ""}</p>
                     <p className="text-neutral-500 text-xs mt-1">{master.bio || ""}</p>
                     <a
-                      href={`#booking`}
+                      href="#booking"
                       onClick={() => {
                         if (master.id) window.dispatchEvent(new CustomEvent("select-artist", { detail: master.id }));
                       }}
@@ -60,9 +109,10 @@ export function MastersSection() {
                     >Записаться</a>
                   </div>
                 </GlowBorder>
-              </ScrollReveal>
-            ))}
-          </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </section>
   );

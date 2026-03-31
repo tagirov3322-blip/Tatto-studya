@@ -27,23 +27,23 @@ artistRouter.get("/:id", async (req, res) => {
 
 // Создать мастера
 artistRouter.post("/", requireAdmin, async (req, res) => {
-  const { name, bio, photoUrl, styles } = req.body;
+  const { name, bio, photoUrl, styles, specialty } = req.body;
   if (!name) {
     res.status(400).json({ error: "name is required" });
     return;
   }
   const artist = await prisma.artist.create({
-    data: { name, bio, photoUrl, styles: styles ?? [] },
+    data: { name, bio, photoUrl, styles: styles ?? [], specialty: specialty || "tattoo" },
   });
   res.status(201).json(artist);
 });
 
 // Обновить мастера
 artistRouter.put("/:id", requireAdmin, async (req, res) => {
-  const { name, bio, photoUrl, styles } = req.body;
+  const { name, bio, photoUrl, styles, specialty } = req.body;
   const artist = await prisma.artist.update({
     where: { id: req.params.id },
-    data: { name, bio, photoUrl, styles },
+    data: { name, bio, photoUrl, styles, specialty },
   });
   res.json(artist);
 });

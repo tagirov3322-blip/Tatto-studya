@@ -52,7 +52,7 @@ export const login = (data: { login: string; password: string }) =>
 // Artists (GET — public, rest — admin)
 export const getArtists = () => request<any[]>("/artists");
 export const getArtist = (id: string) => request<any>(`/artists/${id}`);
-export const createArtist = (data: { name: string; bio?: string; photoUrl?: string; styles?: string[] }) =>
+export const createArtist = (data: { name: string; bio?: string; photoUrl?: string; styles?: string[]; specialty?: string }) =>
   request<any>("/artists", { method: "POST", body: JSON.stringify(data) });
 export const updateArtist = (id: string, data: any) =>
   request<any>(`/artists/${id}`, { method: "PUT", body: JSON.stringify(data) });
