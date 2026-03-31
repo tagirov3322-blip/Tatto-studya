@@ -44,7 +44,7 @@ export function PiercingPriceSection() {
                       {zone.items.map((item, i) => (<li key={i} className="flex items-center gap-3"><FilledCheck /><span>{item}</span></li>))}
                     </ul>
                     <div className="mt-auto">
-                      <Button variant="outline" className="w-full border-green-500/30 text-green-400 hover:bg-green-600 hover:text-white hover:border-green-600 hover:shadow-[0_0_20px_rgba(34,197,94,0.3)] transition-all duration-300">Записаться</Button>
+                      <a href="#booking"><Button variant="outline" className="w-full border-green-500/30 text-green-400 hover:bg-green-600 hover:text-white hover:border-green-600 hover:shadow-[0_0_20px_rgba(34,197,94,0.3)] transition-all duration-300">Записаться</Button></a>
                     </div>
                   </div>
                 </GlowBorder>
