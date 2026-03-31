@@ -107,8 +107,9 @@ export function PortfolioSection() {
             className="flex flex-col gap-3"
             onMouseLeave={() => setHovered(null)}
           >
+            {/* Desktop: flex rows, Mobile: grid */}
             <div
-              className="flex gap-3"
+              className="hidden md:flex gap-3"
               style={{
                 height: getRowHeight(0),
                 transition: "height 0.6s cubic-bezier(0.22, 1, 0.36, 1)",
