@@ -40,6 +40,7 @@ const footerLinks: FooterSection[] = [
 			{ title: 'FAQ', href: '#faq' },
 			{ title: 'Контакты', href: '#contacts' },
 			{ title: 'Политика конфиденциальности', href: '/privacy' },
+			{ title: 'Пользовательское соглашение', href: '/terms' },
 			{ title: 'Уход за тату', href: '#' },
 		],
 	},
