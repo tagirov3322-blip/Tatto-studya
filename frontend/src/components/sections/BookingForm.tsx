@@ -206,9 +206,24 @@ export function BookingForm() {
                 />
               </div>
 
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={agreed}
+                  onChange={(e) => setAgreed(e.target.checked)}
+                  className="mt-1 size-4 rounded border-green-500/30 bg-neutral-950 accent-green-600 cursor-pointer"
+                />
+                <span className="text-xs text-neutral-400 leading-relaxed">
+                  Я соглашаюсь с{" "}
+                  <a href="/terms" target="_blank" className="text-green-400 underline hover:text-green-300">пользовательским соглашением</a>
+                  {" "}и{" "}
+                  <a href="/privacy" target="_blank" className="text-green-400 underline hover:text-green-300">политикой конфиденциальности</a>
+                </span>
+              </label>
+
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || !agreed}
                 className="w-full rounded-lg bg-green-600 py-3.5 text-sm font-semibold text-white transition-all hover:bg-green-700 hover:shadow-[0_0_20px_rgba(34,197,94,0.3)] disabled:opacity-50"
               >
                 {loading ? "Отправляем..." : "Отправить заявку"}
