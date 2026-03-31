@@ -117,8 +117,8 @@ export function HeroSection() {
         </div>
       </div>
 
-      {/* Параллакс-картинки — начинают невидимыми, появляются после текста */}
-      <Floating sensitivity={-1} className="overflow-hidden">
+      {/* Параллакс-картинки — скрыты на мобильных */}
+      <Floating sensitivity={-1} className="overflow-hidden hidden md:block">
         <FloatingElement depth={0.5} className="top-[14%] left-[11%]">
           <motion.img initial={{ opacity: 0 }} src={tattooImages[0].url} alt={tattooImages[0].title}
             className="w-16 h-16 md:w-24 md:h-24 object-cover hover:scale-105 duration-200 cursor-pointer transition-transform rounded-lg border border-green-500/20" />
