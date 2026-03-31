@@ -85,7 +85,7 @@ export function HeroSection() {
 
         <div data-hero-buttons className="flex gap-5 mt-2" style={{ opacity: 0 }}>
           <motion.a
-            href="#tattoo-price"
+            href="#booking"
             className="group relative text-sm bg-green-600 text-white rounded-full py-3.5 px-9 cursor-pointer font-semibold uppercase tracking-wider overflow-hidden"
             whileHover={{ scale: 1.04, boxShadow: "0 0 30px rgba(34,197,94,0.4)" }}
             whileTap={{ scale: 0.96 }}
