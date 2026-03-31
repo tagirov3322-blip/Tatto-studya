@@ -110,7 +110,7 @@ export function HeroSection() {
         <div data-hero-bar className="w-20 h-1 bg-green-500 rounded-full origin-left" style={{ opacity: 0 }} />
 
         <div data-hero-line style={{ opacity: 0 }}>
-          <h1 className="text-6xl md:text-8xl lg:text-9xl text-white font-bold tracking-tighter uppercase">
+          <h1 className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl text-white font-bold tracking-tighter uppercase">
             {"Клякса".split("").map((char, i) => (
               <span
                 key={i}
@@ -124,10 +124,10 @@ export function HeroSection() {
           </h1>
         </div>
 
-        <div data-hero-buttons className="flex gap-5 mt-2" style={{ opacity: 0 }}>
+        <div data-hero-buttons className="flex gap-3 sm:gap-5 mt-2" style={{ opacity: 0 }}>
           <motion.a
             href="#booking"
-            className="group relative text-sm bg-green-600 text-white rounded-full py-3.5 px-9 cursor-pointer font-semibold uppercase tracking-wider overflow-hidden"
+            className="group relative text-xs sm:text-sm bg-green-600 text-white rounded-full py-2.5 px-6 sm:py-3.5 sm:px-9 cursor-pointer font-semibold uppercase tracking-wider overflow-hidden"
             whileHover={{ scale: 1.04, boxShadow: "0 0 30px rgba(34,197,94,0.4)" }}
             whileTap={{ scale: 0.96 }}
             transition={{ type: "spring", stiffness: 400, damping: 20 }}
@@ -142,7 +142,7 @@ export function HeroSection() {
           </motion.a>
           <motion.a
             href="#portfolio"
-            className="group relative text-sm border-2 border-green-500/30 text-green-400 rounded-full py-3.5 px-9 cursor-pointer font-semibold uppercase tracking-wider overflow-hidden"
+            className="group relative text-xs sm:text-sm border-2 border-green-500/30 text-green-400 rounded-full py-2.5 px-6 sm:py-3.5 sm:px-9 cursor-pointer font-semibold uppercase tracking-wider overflow-hidden"
             whileHover={{ scale: 1.04, borderColor: "rgba(34,197,94,0.7)" }}
             whileTap={{ scale: 0.96 }}
             transition={{ type: "spring", stiffness: 400, damping: 20 }}
@@ -159,7 +159,7 @@ export function HeroSection() {
       </div>
 
       {/* Параллакс-картинки — скрыты на мобильных */}
-      <Floating sensitivity={-1} className="overflow-hidden hidden md:block">
+      <Floating sensitivity={-1} className="overflow-hidden hidden lg:block">
         <FloatingElement depth={0.5} className="top-[14%] left-[11%]">
           <img data-hero-img style={{ opacity: 0 }} src={tattooImages[0].url} alt={tattooImages[0].title}
             className="w-16 h-16 md:w-24 md:h-24 object-cover hover:scale-105 duration-200 cursor-pointer transition-transform rounded-lg border border-green-500/20" />

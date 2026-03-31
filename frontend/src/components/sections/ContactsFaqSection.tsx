@@ -42,7 +42,7 @@ export function ContactsFaqSection() {
       <div className="mx-auto w-full max-w-6xl px-4 py-24 relative z-10">
         <div className="text-center mb-14">
           <ScrollReveal><span className="text-green-400 text-sm uppercase tracking-widest font-medium">FAQ</span></ScrollReveal>
-          <TextReveal className="mt-3"><h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">Вопросы</h2></TextReveal>
+          <TextReveal className="mt-3"><h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">Вопросы</h2></TextReveal>
           <ScrollReveal delay={0.2}><p className="text-neutral-400 mt-4 max-w-2xl mx-auto text-base">Ответы на то, что спрашивают чаще всего. Не нашли своё — напишите нам.</p></ScrollReveal>
         </div>
 
@@ -65,26 +65,26 @@ export function ContactsFaqSection() {
       <div id="contacts" className="mx-auto w-full max-w-6xl px-4 pb-24 relative z-10">
         <div className="text-center mb-14">
           <ScrollReveal><span className="text-green-400 text-sm uppercase tracking-widest font-medium">На связи</span></ScrollReveal>
-          <TextReveal className="mt-3"><h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">Контакты</h2></TextReveal>
+          <TextReveal className="mt-3"><h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">Контакты</h2></TextReveal>
         </div>
 
         <StaggerReveal childSelector=".stagger-item" stagger={0.1}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {[
-              { icon: <PhoneIcon className="size-8 text-green-400 mx-auto mb-3" />, title: "Телефон", value: "+7 (900) 322-23-58", href: "tel:+79003222358" },
-              { icon: <MailIcon className="size-8 text-green-400 mx-auto mb-3" />, title: "Почта", value: "tattoo_klaksa@gmail.com", href: "mailto:tattoo_klaksa@gmail.com" },
-              { icon: <MapPinIcon className="size-8 text-green-400 mx-auto mb-3" />, title: "Студия", value: "пр. Сююмбике, 2/19" },
-              { icon: <ClockIcon className="size-8 text-green-400 mx-auto mb-3" />, title: "Часы работы", value: "Ежедневно 10:00 — 19:00" },
+              { icon: <PhoneIcon className="size-6 sm:size-8 text-green-400 mx-auto mb-2 sm:mb-3" />, title: "Телефон", value: "+7 (900) 322-23-58", href: "tel:+79003222358" },
+              { icon: <MailIcon className="size-6 sm:size-8 text-green-400 mx-auto mb-2 sm:mb-3" />, title: "Почта", value: "tattoo_klaksa@gmail.com", href: "mailto:tattoo_klaksa@gmail.com" },
+              { icon: <MapPinIcon className="size-6 sm:size-8 text-green-400 mx-auto mb-2 sm:mb-3" />, title: "Студия", value: "пр. Сююмбике, 2/19" },
+              { icon: <ClockIcon className="size-6 sm:size-8 text-green-400 mx-auto mb-2 sm:mb-3" />, title: "Часы работы", value: "Ежедневно 10:00 — 19:00" },
             ].map((item) => (
               <div key={item.title} className="stagger-item" style={{ visibility: "hidden" }}>
                 <GlowBorder className="h-full" hoverScale={1.05}>
                   {item.href ? (
-                    <a href={item.href} className="p-6 text-center block">
-                      {item.icon}<h3 className="text-white font-semibold mb-1">{item.title}</h3><p className="text-neutral-400 text-sm">{item.value}</p>
+                    <a href={item.href} className="p-3 sm:p-6 text-center block">
+                      {item.icon}<h3 className="text-white font-semibold text-sm sm:text-base mb-1">{item.title}</h3><p className="text-neutral-400 text-xs sm:text-sm">{item.value}</p>
                     </a>
                   ) : (
-                    <div className="p-6 text-center">
-                      {item.icon}<h3 className="text-white font-semibold mb-1">{item.title}</h3><p className="text-neutral-400 text-sm">{item.value}</p>
+                    <div className="p-3 sm:p-6 text-center">
+                      {item.icon}<h3 className="text-white font-semibold text-sm sm:text-base mb-1">{item.title}</h3><p className="text-neutral-400 text-xs sm:text-sm">{item.value}</p>
                     </div>
                   )}
                 </GlowBorder>

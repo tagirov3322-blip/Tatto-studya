@@ -16,7 +16,7 @@ function FilledCheck() {
 function PricingCard({ titleBadge, priceLabel, priceSuffix = '', features, cta = 'Записаться', className }: { titleBadge: string; priceLabel: string; priceSuffix?: string; features: string[]; cta?: string; className?: string }) {
   return (
     <GlowBorder className={cn("h-full", className)}>
-      <div className="p-5 h-full">
+      <div className="p-4 sm:p-5 h-full">
         <div className="flex items-center gap-3">
           <Badge variant="secondary" className="bg-green-500/10 text-green-400 border-green-500/20">{titleBadge}</Badge>
           <div className="ml-auto"><a href="#booking"><Button variant="outline" className="border-green-500/30 text-green-400 hover:bg-green-600 hover:text-white hover:border-green-600 hover:shadow-[0_0_20px_rgba(34,197,94,0.3)] transition-all duration-300">{cta}</Button></a></div>
@@ -39,7 +39,7 @@ export function TattooPriceSection() {
       <div className="mx-auto w-full max-w-6xl">
         <div className="text-center mb-14">
           <ScrollReveal><span className="text-green-400 text-sm uppercase tracking-widest font-medium">Тату</span></ScrollReveal>
-          <TextReveal className="mt-3"><h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">Стоимость</h2></TextReveal>
+          <TextReveal className="mt-3"><h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">Стоимость</h2></TextReveal>
           <ScrollReveal delay={0.2}><p className="text-neutral-400 mt-4 max-w-2xl mx-auto text-base">Финальная цена зависит от размера и сложности. Консультация — бесплатно.</p></ScrollReveal>
         </div>
 
@@ -47,7 +47,7 @@ export function TattooPriceSection() {
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-8">
             <div className="stagger-item lg:col-span-5" style={{ visibility: "hidden" }}>
               <GlowBorder className="h-full">
-                <div className="p-5 h-full">
+                <div className="p-4 sm:p-5 h-full">
                   <div className="pointer-events-none absolute top-0 left-1/2 -mt-2 -ml-20 h-full w-full [mask-image:linear-gradient(white,transparent)]">
                     <div className="from-green-500/5 to-green-500/2 absolute inset-0 bg-gradient-to-r [mask-image:radial-gradient(farthest-side_at_top,white,transparent)]">
                       <div aria-hidden="true" className={cn('absolute inset-0 size-full mix-blend-overlay', 'bg-[linear-gradient(to_right,rgba(34,197,94,0.1)_1px,transparent_1px)]', 'bg-[size:24px]')} />

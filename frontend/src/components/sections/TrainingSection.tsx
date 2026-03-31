@@ -28,7 +28,7 @@ export function TrainingSection() {
       <div className="mx-auto w-full max-w-6xl relative z-10">
         <div className="text-center mb-14">
           <ScrollReveal><span className="text-green-400 text-sm uppercase tracking-widest font-medium">Обучение</span></ScrollReveal>
-          <TextReveal className="mt-3"><h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">Курсы</h2></TextReveal>
+          <TextReveal className="mt-3"><h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">Курсы</h2></TextReveal>
           <ScrollReveal delay={0.2}><p className="text-neutral-400 mt-4 max-w-2xl mx-auto text-base">От нуля до первого клиента. Учим на практике, а не на лекциях.</p></ScrollReveal>
         </div>
 
@@ -37,7 +37,7 @@ export function TrainingSection() {
             {tariffs.map((tariff) => (
               <div key={tariff.name} className="stagger-item" style={{ visibility: "hidden" }}>
                 <GlowBorder className="h-full">
-                  <div className="relative p-6 h-full flex flex-col">
+                  <div className="relative p-4 sm:p-6 h-full flex flex-col">
                     {tariff.popular && (
                       <div className="pointer-events-none absolute top-0 left-1/2 -mt-2 -ml-20 h-full w-full [mask-image:linear-gradient(white,transparent)]">
                         <div className="from-green-500/5 to-green-500/2 absolute inset-0 bg-gradient-to-r [mask-image:radial-gradient(farthest-side_at_top,white,transparent)]" />

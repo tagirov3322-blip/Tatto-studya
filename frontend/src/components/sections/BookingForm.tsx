@@ -124,7 +124,7 @@ export function BookingForm() {
             <span className="text-green-400 text-sm uppercase tracking-widest font-medium">Запись</span>
           </ScrollReveal>
           <TextReveal className="mt-3">
-            <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">Записаться на сеанс</h2>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">Записаться на сеанс</h2>
           </TextReveal>
           <ScrollReveal delay={0.2}>
             <p className="text-neutral-400 mt-4 text-base">Заполните форму — мы свяжемся с вами для подтверждения</p>
@@ -372,7 +372,7 @@ function DateTimePicker({ value, onChange, bookedSlots = [], schedule }: { value
     setDropdownPos({
       top: rect.bottom + window.scrollY + 8,
       left: rect.left + window.scrollX,
-      width: Math.min(340, rect.width),
+      width: Math.min(340, rect.width, window.innerWidth - 32),
     });
   };
 

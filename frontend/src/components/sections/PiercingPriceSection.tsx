@@ -26,7 +26,7 @@ export function PiercingPriceSection() {
       <div className="mx-auto w-full max-w-6xl relative z-10">
         <div className="text-center mb-14">
           <ScrollReveal><span className="text-green-400 text-sm uppercase tracking-widest font-medium">Пирсинг</span></ScrollReveal>
-          <TextReveal className="mt-3"><h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">Стоимость</h2></TextReveal>
+          <TextReveal className="mt-3"><h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">Стоимость</h2></TextReveal>
           <ScrollReveal delay={0.2}><p className="text-neutral-400 mt-4 max-w-2xl mx-auto text-base">В цену входит работа мастера, базовое украшение из титана и антисептическая обработка.</p></ScrollReveal>
         </div>
 
@@ -35,10 +35,10 @@ export function PiercingPriceSection() {
             {piercingData.map((zone) => (
               <div key={zone.zone} className="stagger-item" style={{ visibility: "hidden" }}>
                 <GlowBorder className="h-full">
-                  <div className="p-6 h-full flex flex-col">
-                    <div className="flex items-center justify-between mb-6">
-                      <Badge variant="secondary" className="bg-green-500/10 text-green-400 border-green-500/20 text-base px-4 py-1">{zone.zone}</Badge>
-                      <span className="font-mono text-2xl font-bold text-white">{zone.price}</span>
+                  <div className="p-4 sm:p-6 h-full flex flex-col">
+                    <div className="flex items-center justify-between mb-4 sm:mb-6">
+                      <Badge variant="secondary" className="bg-green-500/10 text-green-400 border-green-500/20 text-sm sm:text-base px-3 sm:px-4 py-1">{zone.zone}</Badge>
+                      <span className="font-mono text-xl sm:text-2xl font-bold text-white">{zone.price}</span>
                     </div>
                     <ul className="text-neutral-400 space-y-3 text-sm mb-6">
                       {zone.items.map((item, i) => (<li key={i} className="flex items-center gap-3"><FilledCheck /><span>{item}</span></li>))}

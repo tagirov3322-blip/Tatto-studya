@@ -88,7 +88,7 @@ export function PortfolioSection() {
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="text-center mb-14">
           <TextReveal>
-            <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">Портфолио</h2>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">Портфолио</h2>
           </TextReveal>
           <ScrollReveal delay={0.2}>
             <p className="text-green-400 mt-4 max-w-2xl mx-auto text-base">
