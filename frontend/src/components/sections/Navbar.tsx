@@ -73,12 +73,19 @@ export function Navbar() {
             <a
               key={link.href}
               href={link.href}
-              className="block py-3 text-neutral-400 hover:text-green-400 transition-colors border-b border-neutral-800 last:border-0"
+              className="block py-3 text-neutral-400 hover:text-green-400 transition-colors border-b border-neutral-800"
               onClick={() => setMobileOpen(false)}
             >
               {link.label}
             </a>
           ))}
+          <a
+            href="#booking"
+            className="block mt-3 text-center text-sm bg-green-600 text-white rounded-full px-5 py-3 hover:bg-green-700 transition-colors font-medium"
+            onClick={() => setMobileOpen(false)}
+          >
+            Записаться
+          </a>
         </div>
       )}
     </nav>
