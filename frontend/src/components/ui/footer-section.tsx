@@ -31,7 +31,6 @@ const footerLinks: FooterSection[] = [
 			{ title: 'Тату', href: '#tattoo-price' },
 			{ title: 'Пирсинг', href: '#piercing-price' },
 			{ title: 'Обучение', href: '#training' },
-			{ title: 'Консультация', href: '#contacts' },
 		],
 	},
 	{
@@ -41,13 +40,12 @@ const footerLinks: FooterSection[] = [
 			{ title: 'Контакты', href: '#contacts' },
 			{ title: 'Политика конфиденциальности', href: '/privacy' },
 			{ title: 'Пользовательское соглашение', href: '/terms' },
-			{ title: 'Уход за тату', href: '#' },
 		],
 	},
 	{
 		label: 'Соцсети',
 		links: [
-			{ title: 'Instagram', href: '#', icon: CameraIcon },
+			{ title: 'ВКонтакте', href: '#', icon: CameraIcon },
 			{ title: 'Telegram', href: '#', icon: MessageCircleIcon },
 			{ title: 'Телефон', href: 'tel:+74951234567', icon: PhoneIcon },
 			{ title: 'Почта', href: 'mailto:hello@klyaksa.ink', icon: MailIcon },
